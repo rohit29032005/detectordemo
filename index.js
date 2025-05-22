@@ -6,7 +6,7 @@ import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/
 const firebaseConfig = {
   apiKey: "AIzaSyBwVMxhmCbm-jo6ExYj2m9hXLhexuDKk0U",
   authDomain: "shakealert-908d0.firebaseapp.com",
-  databaseURL: "https://shakealert-908d0-default-rtdb.firebaseio.com/",
+  databaseURL: "https://shakealert-908d0-default-rtdb.asia-southeast1.firebasedatabase.app/",
   projectId: "shakealert-908d0",
   storageBucket: "shakealert-908d0.appspot.com",
   messagingSenderId: "202678351500",
