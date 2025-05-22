@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shake Detector - ShakeAlert Web</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      text-align: center;
+    }
+    h1 {
+      color: #222;
+    }
+    p#status {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #dc3545;
+    }
+    .note {
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚨 Shake Detector</h1>
+  <p>Shake your phone to trigger alert!</p>
+  <p id="status">Waiting for motion...</p>
+
+  <p class="note">* Works best on mobile devices with accelerometer</p>
+
+  <!-- Detector JS -->
+  <script type="module" src="detector.js"></script>
+</body>
+</html>
