@@ -1,4 +1,4 @@
-// index.js (Firebase Realtime Database + Shake Detection)
+// index.js (ShakeAlert Full Firebase Version)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
@@ -19,11 +19,12 @@ const database = getDatabase(app);
 const statusText = document.getElementById("status");
 
 // Shake detection parameters
-const SHAKE_THRESHOLD = 15; // Adjust sensitivity (higher = needs stronger shake)
+const SHAKE_THRESHOLD = 15;
 let lastUpdate = 0;
-const UPDATE_INTERVAL = 500; // Milliseconds between checks
+const UPDATE_INTERVAL = 500;
+let shakeCooldown = false;
 
-// Firebase data sender
+// Send motion data to Firebase
 function sendMotionData(total, x, y, z) {
   const motionsRef = ref(database, 'motions/');
   const newMotionRef = push(motionsRef);
@@ -49,17 +50,27 @@ window.addEventListener("devicemotion", (event) => {
 
   const { x, y, z } = acc;
   const total = Math.sqrt(x ** 2 + y ** 2 + z ** 2);
-  
   statusText.textContent = `Shake Level: ${total.toFixed(2)}`;
-  
-  if (total > SHAKE_THRESHOLD) {
+
+  if (total > SHAKE_THRESHOLD && !shakeCooldown) {
     statusText.innerHTML = "🚨 Earthquake Detected!<br><small>Alert sent to server</small>";
     sendMotionData(total, x, y, z);
     lastUpdate = now;
+    shakeCooldown = true;
+
+    // Optional: mobile device vibration
+    if (navigator.vibrate) {
+      navigator.vibrate(500);
+    }
+
+    // Cooldown for 2 seconds
+    setTimeout(() => {
+      shakeCooldown = false;
+    }, 2000);
   }
 });
 
-// Initial state check
+// Initial info
 statusText.textContent = navigator.userAgent.includes("Mobile") 
-  ? "Shake your device to test!" 
-  : "Use a mobile device for full functionality";
+  ? "📱 Shake your phone to test the detector" 
+  : "⚠️ Use a mobile device for testing!";
