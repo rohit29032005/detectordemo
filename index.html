@@ -15,20 +15,53 @@
       margin: 0;
       background: linear-gradient(135deg, #f8f9fa, #e9ecef);
       text-align: center;
+      padding: 20px;
     }
     h1 {
       color: #222;
     }
     p#status {
       margin-top: 20px;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       font-weight: bold;
       color: #dc3545;
+      max-width: 90%;
+      word-wrap: break-word;
     }
     .note {
       margin-top: 40px;
       font-size: 0.9rem;
       color: #6c757d;
+    }
+    .test-buttons {
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      min-width: 200px;
+      font-weight: bold;
+    }
+    .test-btn {
+      background-color: #007bff;
+      color: white;
+    }
+    .test-btn:hover {
+      background-color: #0056b3;
+    }
+    .mock-btn {
+      background-color: #28a745;
+      color: white;
+    }
+    .mock-btn:hover {
+      background-color: #1e7e34;
     }
   </style>
 </head>
@@ -36,9 +69,20 @@
 
   <h1>🚨 Shake Detector</h1>
   <p>Shake your phone to trigger alert!</p>
+  
+  <div class="test-buttons">
+    <button class="test-btn" onclick="testLocation()">
+      🧪 Test Location Only
+    </button>
+    <button class="mock-btn" onclick="simulateShake()">
+      🎯 Send Mock Shake Data
+    </button>
+  </div>
+  
   <p id="status">Waiting for motion...</p>
 
   <p class="note">* Works best on mobile devices with accelerometer</p>
+  <p class="note">Use test buttons above to debug location and Firebase connectivity</p>
 
   <!-- Detector JS -->
   <script type="module" src="index.js"></script>
