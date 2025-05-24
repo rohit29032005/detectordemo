@@ -30,7 +30,8 @@ async function getReadableLocation(lat, lng) {
     const data = await response.json();
     return data.results[0]?.formatted || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   } catch (error) {
-    console.error("Reverse geocoding failed:", error);
+    // Log this to console if possible, but don't change statusText here
+    console.error("Reverse geocoding failed:", error); 
     return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   }
 }
@@ -40,10 +41,20 @@ async function logShake(intensity, x, y, z) {
     const coords = await new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
         pos => resolve(pos.coords),
-        err => reject(err)
+        err => {
+          // This reject will be caught by the main catch block
+          reject(err); 
+        },
+        // ADD GEOLOCATION OPTIONS (from search result [3], [5])
+        {
+          enableHighAccuracy: true,
+          timeout: 15000, // 15 seconds timeout
+          maximumAge: 0   // Force fresh location
+        }
       );
     });
-    
+
+    // If we reach here, geolocation was successful
     const location = await getReadableLocation(coords.latitude, coords.longitude);
     const timestamp = Date.now();
 
@@ -65,8 +76,18 @@ async function logShake(intensity, x, y, z) {
 
     statusText.innerHTML = `✅ Shake logged at<br><small>${location}</small>`;
   } catch (error) {
-    console.error("Error:", error);
-    statusText.textContent = "⚠️ Enable location permissions!";
+    // THIS IS WHERE THE GEOLOCATION ERROR WILL BE CAUGHT
+    console.error("Error in logShake:", error); // For when you can use USB debugging
+
+    // --- DISPLAY THE SPECIFIC GEOLOCATION ERROR MESSAGE ON SCREEN ---
+    let errorMessage = "⚠️ Enable location permissions!"; // Default
+    if (error && error.message) {
+      errorMessage = `📍 Loc Error (${error.code || 'N/A'}): ${error.message}`;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    }
+    statusText.textContent = errorMessage;
+    // --- END OF DISPLAYING SPECIFIC ERROR ---
   }
 }
 
@@ -76,11 +97,17 @@ window.addEventListener("devicemotion", (event) => {
   if (now - lastShake < UPDATE_INTERVAL) return;
 
   const acc = event.accelerationIncludingGravity || event.acceleration;
-  if (!acc) return;
+  if (!acc) {
+    statusText.textContent = "Sensor 'acc' not available."; // Added for debugging
+    return;
+  }
 
   const { x, y, z } = acc;
   const total = Math.sqrt(x**2 + y**2 + z**2);
   
+  // Update statusText to show shake level temporarily
+  // statusText.textContent = `Shake Level: ${total.toFixed(2)}`; // You can uncomment this to see raw shake levels
+
   if (total > SHAKE_THRESHOLD) {
     lastShake = now;
     logShake(total, x, y, z);
