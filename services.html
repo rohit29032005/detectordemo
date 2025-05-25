@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Shake Alert/Services</title>
+    <link rel="icon" href="./picture/logo.jpg" type="image/x-icon" />
+    <style>
+      :root {
+        --orange: #ff7f00;
+        --dark: #0f0f0f;
+        --light: #ffffff;
+        --highlight: #ffc107;
+        --gray: #888;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--dark);
+        color: var(--light);
+      }
+
+      header {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(90deg, #111, #222);
+        border-bottom: 5px solid var(--orange);
+        animation: fadeIn 2s ease-in-out;
+      }
+
+      header h1 {
+        font-size: 2.8rem;
+        color: var(--orange);
+      }
+
+      header p {
+        color: var(--gray);
+        font-size: 1.2rem;
+      }
+
+      section {
+        padding: 3rem 2rem;
+        max-width: 1200px;
+        margin: auto;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 1s ease-out;
+      }
+
+      section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .features {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 0 1rem;
+        align-items: center;
+      }
+
+      .card {
+        background: #1a1a1a;
+        border-left: 5px solid var(--orange);
+        border-radius: 10px;
+        padding: 1rem 1.2rem;
+        margin-top: 2em;
+        width: 100%;
+        box-sizing: border-box;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        opacity: 0;
+        transform: scale(0.98);
+        animation: floatCard 4s ease-in-out infinite;
+        max-width: 100%;
+        height: auto;
+        text-align: center;
+      }
+
+      .card.visible {
+        opacity: 1;
+        transform: scale(1);
+        transition: all 0.8s ease;
+      }
+
+      .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(255, 127, 0, 0.6);
+      }
+
+      @keyframes floatCard {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      .card h3 {
+        color: var(--highlight);
+      }
+
+      .card p {
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+      }
+
+      .highlighted {
+        background: #222;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(255, 127, 0, 0.3);
+      }
+
+      footer {
+        background: #111;
+        color: var(--gray);
+        text-align: center;
+        padding: 1.5rem;
+        font-size: 0.9rem;
+      }
+      .marquee {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        box-sizing: border-box;
+        background: #1a1a1a;
+        color: var(--orange);
+        padding: 0.5rem 0;
+        font-size: 1rem;
+        animation: marquee 15s linear infinite;
+        position: relative;
+      }
+
+      @keyframes marquee {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+
+      #vanta-bg {
+        width: 100vw;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="background-color: #000; min-height: 100vh;">
+      <div class="marquee">
+        ⚡ Earthquake Alerts in Real-Time | Smart AI Predictions | Trusted
+        Geo-Intelligence
+      </div>
+      <header>
+        <h1>🌍 ShakeAlert Kind</h1>
+        <p>AI-Driven | Real-Time Alerts | Trusted by Millions</p>
+      </header>
+
+      <section id="features">
+        <h2 style="text-align: center">🔥 Groundbreaking Features</h2>
+        <div class="features">
+          <div class="card">
+            <h3>AI Prediction Engine</h3>
+            <p>
+              Detects patterns using seismic data to give early warnings minutes
+              before tremors.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Geo-Smart Alerts</h3>
+            <p>
+              Notifies you based on your real-time location, minimizing false
+              alarms.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Real-Time Firebase Sync</h3>
+            <p>
+              Stores and updates place-specific risk levels and user safety
+              status dynamically.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Preparedness Tips</h3>
+            <p>
+              Provides customized safety steps for high-risk zones with
+              community-driven suggestions.
+            </p>
+          </div>
+          <!-- Additional Groundbreaking Feature Cards -->
+          <div class="card">
+            <h3>Vibration Pattern Analyzer</h3>
+            <p>
+              Differentiates between normal activities and seismic vibrations
+              using real-time accelerometer data analysis.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Offline Emergency Mode</h3>
+            <p>
+              Ensures basic alerts and emergency instructions are available even
+              without an active internet connection.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Community Safety Network</h3>
+            <p>
+              Connects users in the same vicinity for sharing updates, safe
+              zones, and emotional support during crises.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Dynamic Risk Heatmap</h3>
+            <p>
+              Live-updating seismic risk visualization with color-coded zones,
+              powered by advanced GIS data integration.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Seismic Event Timeline</h3>
+            <p>
+              Displays a chronological view of past and recent earthquake
+              activity to promote awareness and preparedness.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="notifications" class="highlighted">
+        <h2>📢 How Notifications Work</h2>
+        <p>
+          Our system collaborates with global seismic stations, using AI to
+          detect movement trends. When danger is detected, alerts are instantly
+          pushed to:
+        </p>
+        <ul>
+          <li>📱 Mobile Devices (SMS, App Alerts)</li>
+          <li>🖥 Desktop Notifications</li>
+        </ul>
+      </section>
+
+      <section id="contact">
+        <h2>📞 Contact Authorities</h2>
+        <div class="features">
+          <div class="card">
+            <h3>Global Seismic Authority</h3>
+            <p>📧 global@quakeauthority.org<br />📞 +1-800-000-GSA</p>
+          </div>
+          <div class="card">
+            <h3>Local Emergency Ops</h3>
+            <p>📧 localresponse@alert.net<br />📞 911 (USA), 112 (INTL)</p>
+          </div>
+          <div class="card">
+            <h3>Rohit Shrivastava</h3>
+            <p>📧 rohit.lalbahadur2023@vitstudent.ac.in<br />📞 +91-8459492318</p>
+          </div>
+          <div class="card">
+            <h3>Anshika Rai</h3>
+            <p>📧 anshika.rai2023@vitstudent.ac.in<br />📞 +91-9651371090</p>
+          </div>
+          <div class="card">
+            <h3>Harshita Singh</h3>
+            <p>📧 harshita.singh2023@vitstudent.ac.in<br />📞 +91-7667749561</p>
+          </div>
+          <div class="card">
+            <h3>Ashmit Dudeja</h3>
+            <p>📧 ashmit.dudeja2023@vitstudent.ac.in<br />📞 +91-8700572368</p>
+          </div>
+          <div class="card">
+            <h3>Gaurav Singh</h3>
+            <p>📧 gaurav.singh2023@vitstudent.ac.in<br />📞 +91-7269942222</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        &copy; 2025 ShakeAlert Kind | All Rights Reserved | Designed with ❤ for
+        safety.
+      </footer>
+    </div>
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+            }
+          });
+        },
+        {
+          threshold: 0.1,
+        }
+      );
+
+      document.querySelectorAll("section, .card").forEach((el) => {
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>

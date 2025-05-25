@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Shake Alert/Earthquake Safety Guide</title>
+    <link rel="icon" href="./picture/logo.jpg" type="image/x-icon" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <style>
+      :root {
+        --orange: #ff7f00;
+        --bg: #000;
+        --text: #f5f5f5;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        border: 10px solid var(--orange);
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        box-sizing: border-box;
+        border: 10px solid var(--orange);
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      #main-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      #vanta-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      header img {
+        width: 100px;
+        filter: drop-shadow(0 0 10px var(--orange));
+      }
+
+      header h1 {
+        color: var(--orange);
+        font-size: 2.5rem;
+        margin-top: 10px;
+      }
+
+      .section {
+        margin: 40px auto;
+        max-width: 900px;
+        padding: 30px;
+        border-radius: 15px;
+        background: black;
+        border: 2px solid var(--orange);
+        box-shadow: 0 0 25px rgba(255, 127, 0, 0.3);
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 0.8s ease;
+      }
+
+      .section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .section h2 {
+        text-align: center;
+        color: var(--orange);
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+      }
+
+      .section ul {
+        list-style: none;
+        padding-left: 0;
+        line-height: 1.7;
+      }
+
+      .section ul li {
+        padding: 10px;
+        border-bottom: 1px dashed #333;
+      }
+
+      .section ul li::before {
+        content: "✔ ";
+        margin-right: 5px;
+      }
+
+      .footer {
+        position: relative;
+        color: #ff5722;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        z-index: 100;
+        text-align: center;
+        box-sizing: border-box;
+        padding: 10px 5px;
+        background: #1a1a1a;
+        border-top: 1px solid rgba(255, 87, 34, 0.3);
+        font-size: 1em;
+        box-shadow: 0 -4px 10px rgba(255, 87, 34, 0.2);
+      }
+
+      .footer label {
+        color: #ffffff;
+        text-decoration: none;
+        margin: 0 10px;
+        transition: color 0.3s ease;
+      }
+
+      .footer label:hover {
+        color: #ff5722;
+        text-shadow: 0 0 5px rgba(255, 87, 34, 0.6);
+      }
+
+      @media screen and (max-width: 600px) {
+        header h1 {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="vanta-bg"></div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+      <header>
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/130/130304.png"
+          alt="Earthquake Logo"
+        />
+        <h1>Earthquake Safety Guide</h1>
+      </header>
+
+      <div class="section" id="before">
+        <h2>🔧 BEFORE an Earthquake</h2>
+        <ul>
+          <li>🧯 Secure heavy furniture & electronics.</li>
+          <li>📦 Prepare emergency kits (water, food, flashlight).</li>
+          <li>🏠 Identify safe zones under tables or corners.</li>
+          <li>📱 Save emergency contacts in phone.</li>
+          <li>👨‍👩‍👧‍👦 Conduct family safety drills regularly.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>⚠ DURING an Earthquake</h2>
+        <ul>
+          <li>🔻 Drop, Cover, and Hold On!</li>
+          <li>🚪 Stay indoors; avoid windows and doors.</li>
+          <li>🏞 If outside, move to an open area away from buildings.</li>
+          <li>🚘 If in a car, stop safely and stay inside.</li>
+          <li>🚫 Do not use elevators!</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>🚨 AFTER an Earthquake</h2>
+        <ul>
+          <li>🩹 Check yourself and others for injuries.</li>
+          <li>🌊 Watch for tsunami warnings (in coastal areas).</li>
+          <li>🧯 Shut off gas and electricity if you smell leaks.</li>
+          <li>📻 Listen to emergency broadcasts for updates.</li>
+          <li>💬 Use text/WhatsApp to communicate.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>📋 Emergency Kit Essentials</h2>
+        <ul>
+          <li>🥫 Non-perishable food (3-day supply)</li>
+          <li>💧 Water (1 gallon per person per day)</li>
+          <li>🔦 Flashlight with extra batteries</li>
+          <li>🧰 First aid kit with necessary meds</li>
+          <li>📑 Important documents in waterproof bag</li>
+          <li>🧥 Warm clothes, blankets, sturdy shoes</li>
+          <li>📱 Power bank and emergency phone list</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>🚫 What NOT To Do During An Earthquake</h2>
+        <ul>
+          <li>❌ Don’t run outside during shaking</li>
+          <li>❌ Don’t stand under doorways</li>
+          <li>❌ Don’t light candles or matches if you smell gas</li>
+          <li>❌ Don’t use elevators</li>
+          <li>❌ Don’t panic or scream – stay calm</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>🧠 Post-Earthquake Mental Health Tips</h2>
+        <ul>
+          <li>💬 Talk about your experience with others</li>
+          <li>🧘 Practice deep breathing or short meditations</li>
+          <li>📖 Write down your thoughts in a journal</li>
+          <li>🕊 Give yourself time to process emotions</li>
+          <li>📞 Seek professional help if symptoms persist</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>🤔 Myth vs Fact: Earthquake Safety</h2>
+        <ul>
+          <li>
+            <strong>Myth:</strong> Earthquakes only happen in the morning.
+            <br /><em>Fact:</em> Earthquakes can occur at any time of day or
+            night.
+          </li>
+          <li>
+            <strong>Myth:</strong> Doorways are safest. <br /><em>Fact:</em>
+            Tables or sturdy furniture offer better protection.
+          </li>
+          <li>
+            <strong>Myth:</strong> Animals can predict quakes. <br /><em
+              >Fact:</em
+            >
+            No scientific evidence supports this consistently.
+          </li>
+          <li>
+            <strong>Myth:</strong> Small tremors prevent big ones. <br /><em
+              >Fact:</em
+            >
+            Small quakes don’t reduce big quake risk.
+          </li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>📍 Step-by-Step Earthquake Evacuation Plan</h2>
+        <ul>
+          <li>1️⃣ Take cover and wait until shaking stops</li>
+          <li>2️⃣ Grab emergency kit if it's safe to do so</li>
+          <li>3️⃣ Exit building using stairs, not elevators</li>
+          <li>4️⃣ Head to a designated safe open area</li>
+          <li>5️⃣ Tune into emergency alerts and updates</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>🗣 Survivor Story Spotlight</h2>
+        <ul>
+          <li>
+            <strong>Rita, 2015 Nepal Quake:</strong> “Practicing our drill saved
+            my family. We huddled under a table and waited. That preparation
+            made all the difference.”
+          </li>
+          <li>
+            <strong>Ahmed, 2001 Bhuj Quake:</strong> “The emergency kit we
+            packed six months earlier had food, water, and flashlight – it
+            helped us survive two days until help arrived.”
+          </li>
+          <li>
+            <strong>Meena, 2023 Turkey Quake:</strong> “I had never imagined
+            this happening. But watching safety videos gave me courage and I
+            could help my neighbors too.”
+          </li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>✅ Self-Check: Are You Earthquake-Ready?</h2>
+        <ul>
+          <li>I have a packed emergency kit</li>
+          <li>I know the safe spots in my home</li>
+          <li>I have secured heavy items at home</li>
+          <li>I’ve practiced a safety drill with my family</li>
+          <li>I saved emergency contact numbers</li>
+        </ul>
+      </div>
+    </div>
+    <footer class="footer">
+      <p>Contact us: <label>geospatialvit@gmail.com</label> | <label>8459492318</label></p>
+    </footer>
+
+    <!-- VANTA & Observer Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <script>
+      let vantaEffect;
+
+      function initializeVanta() {
+        if (vantaEffect) vantaEffect.destroy();
+
+        const width = window.innerWidth;
+        let points, spacing, maxDistance;
+
+        if (width <= 600) {
+          // Small screens (phones)
+          points = 10;
+          spacing = 16;
+          maxDistance = 15;
+        } else if (width <= 1024) {
+          // Medium screens (tablets, small laptops)
+          points = 20;
+          spacing = 18;
+          maxDistance = 20;
+        } else {
+          // Large screens (desktops)
+          points = 12;
+          spacing = 15;
+          maxDistance = 20;
+        }
+
+        vantaEffect = VANTA.NET({
+          el: "#vanta-bg",
+          mouseControls: true,
+          touchControls: true,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          scale: 1.0,
+          scaleMobile: 1.0,
+          color: 0xff3c00,
+          backgroundColor: "#111",
+          points: points,
+          spacing: spacing,
+          maxDistance: maxDistance,
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", initializeVanta);
+
+      // Optional: only reinitialize after user stops resizing for smoother UX
+      let resizeTimeout;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(initializeVanta, 300); // debounce resize
+      });
+    </script>
+
+    <script>
+      const sections = document.querySelectorAll(".section");
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+
+      sections.forEach((section) => {
+        observer.observe(section);
+      });
+    </script>
+  </body>
+</html>

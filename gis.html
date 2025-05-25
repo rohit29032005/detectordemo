@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Shake Alert - GIS Information</title>
+    <link rel="icon" href="./picture/logo.jpg" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- AOS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* General Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #111;
+        color: #ffffff;
+        overflow-x: hidden;
+        position: relative;
+        padding-bottom: 80px;
+        transition: background-color 0.4s ease, color 0.4s ease;
+      }
+
+      body.light-mode {
+        background-color: #f9f9f9;
+        color: #8c8a8a;
+      }
+
+      #vanta-bg {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+      }
+
+      /* Navbar */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 10;
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-mode .navbar {
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.8rem;
+        color: #ff5722;
+        letter-spacing: 1.5px;
+      }
+
+      .nav-links {
+        list-style: none;
+        display: flex;
+        gap: 1.4rem;
+      }
+
+      .nav-links li a,
+      .nav-links li button {
+        text-decoration: none;
+        color: inherit;
+        font-weight: 600;
+        font-size: 1rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.4rem 0.8rem;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .nav-links li a:hover,
+      .nav-links li button:hover {
+        background-color: #ff5722;
+        color: white;
+      }
+
+      .nav-links li a.active {
+        background-color: #ff5722;
+        color: white;
+      }
+
+      /* Hamburger Menu */
+      .hamburger {
+        display: none;
+        font-size: 2rem;
+        background: none;
+        border: none;
+        color: #ff5722;
+        cursor: pointer;
+        z-index: 20;
+      }
+
+      /* Main Content */
+      .zigzag-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: fadeIn 1.5s ease;
+        padding-top: 100px;
+      }
+
+      .zigzag-container {
+        max-width: 1100px;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .zigzag-item {
+        display: flex;
+        align-items: center;
+        padding: 50px 0;
+        gap: 40px;
+        margin-top: 40px;
+        margin-bottom: 60px;
+        border-radius: 16px;
+        background: linear-gradient(145deg, rgba(26, 26, 26, 0.8), rgba(13, 13, 13, 0.8));
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5),
+                    0 0 20px rgba(255, 87, 34, 0.1);
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 87, 34, 0.2);
+      }
+
+      body.light-mode .zigzag-item {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(249, 249, 249, 0.8));
+        border: 1px solid rgba(212, 67, 21, 0.2);
+      }
+
+      .zigzag-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 25px 35px rgba(0, 0, 0, 0.8),
+                    0 0 25px rgba(255, 87, 34, 0.3);
+      }
+
+      .zigzag-item.center {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .zigzag-image img {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 6px 25px rgba(255, 87, 34, 0.25);
+        transition: transform 0.3s ease;
+      }
+
+      .zigzag-image img:hover {
+        transform: scale(1.03);
+      }
+
+      .zigzag-text {
+        max-width: 520px;
+        padding: 0 20px;
+      }
+
+      .zigzag-text h2 {
+        color: #ff5722;
+        margin-bottom: 15px;
+        font-size: 2em;
+        text-shadow: 1px 1px 5px rgba(255, 87, 34, 0.4);
+        position: relative;
+        font-family: 'Orbitron', sans-serif;
+      }
+
+      body.light-mode .zigzag-text h2 {
+        color: #d84315;
+      }
+
+      .zigzag-text p {
+        font-size: 1.05em;
+        line-height: 1.7;
+        color: #dddddd;
+      }
+
+      body.light-mode .zigzag-text p {
+        color: #666;
+      }
+
+      .reverse {
+        flex-direction: row-reverse;
+      }
+
+      /* FAQ List */
+      .faq-list {
+        max-width: 900px;
+        margin: auto;
+        text-align: left;
+        padding-left: 20px;
+      }
+
+      .faq-list li {
+        margin-bottom: 12px;
+        line-height: 1.6;
+        color: #dddddd;
+      }
+
+      body.light-mode .faq-list li {
+        color: #666;
+      }
+
+      /* Table Styling */
+      table {
+        width: 90%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      body.light-mode table {
+        color: #333;
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+
+      thead tr {
+        background-color: rgba(26, 26, 26, 0.8);
+      }
+
+      body.light-mode thead tr {
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+
+      th, td {
+        padding: 10px;
+        border: 1px solid #ff5722;
+        text-align: center;
+      }
+
+      body.light-mode th,
+      body.light-mode td {
+        border: 1px solid #d84315;
+      }
+
+      /* Footer */
+      .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        text-align: center;
+        padding: 15px 10px;
+        background: #1a1a1a;
+        color: #ff5722;
+        border-top: 1px solid rgba(255, 87, 34, 0.3);
+        font-size: 1em;
+        box-shadow: 0 -4px 10px rgba(255, 87, 34, 0.2);
+      }
+
+      .footer label {
+        color: #ffffff;
+        text-decoration: none;
+        margin: 0 10px;
+        transition: color 0.3s ease;
+      }
+
+      .footer label:hover {
+        color: #ff5722;
+        text-shadow: 0 0 5px rgba(255, 87, 34, 0.6);
+      }
+
+      /* Animation Keyframes */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .hamburger {
+          display: block;
+        }
+
+        .nav-menu {
+          position: fixed;
+          top: 0;
+          right: -250px;
+          width: 250px;
+          height: 100vh;
+          background-color: #111;
+          transition: right 0.3s ease;
+          padding-top: 80px;
+          z-index: 15;
+          box-shadow: -2px 0 8px rgba(0,0,0,0.5);
+        }
+
+        .nav-menu.active {
+          right: 0;
+        }
+
+        .nav-links {
+          flex-direction: column;
+          align-items: flex-start;
+          padding-left: 20px;
+          gap: 1.2rem;
+        }
+
+        .nav-links li {
+          width: 100%;
+        }
+
+        .nav-links li a,
+        .nav-links li button {
+          display: block;
+          padding: 1rem;
+          width: 100%;
+          text-align: left;
+        }
+
+        .navbar {
+          justify-content: space-between;
+        }
+
+        .zigzag-item, .reverse {
+          flex-direction: column;
+          text-align: center;
+          padding: 30px 10px;
+        }
+
+        .zigzag-text {
+          padding: 20px 0;
+        }
+
+        .zigzag-image img {
+          max-width: 90%;
+        }
+
+        .zigzag-section {
+          padding-top: 80px;
+        }
+
+        table {
+          width: 95%;
+          font-size: 0.9em;
+        }
+
+        th, td {
+          padding: 8px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .navbar {
+          padding: 0.8rem 1rem;
+        }
+
+        .logo {
+          font-size: 1.4rem;
+        }
+
+        .zigzag-text h2 {
+          font-size: 1.6em;
+        }
+
+        .zigzag-text p {
+          font-size: 1em;
+        }
+
+        table {
+          font-size: 0.8em;
+        }
+
+        th, td {
+          padding: 6px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Background Animation -->
+    <div id="vanta-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+      <h1 class="logo">Shake Alert</h1>
+      <button class="hamburger" id="hamburger">&#9776;</button>
+      <div class="nav-menu" id="nav-menu">
+        <ul class="nav-links">
+          <li><a href="gis.html" class="active">GIS Info</a></li>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="3d.html">3D Demo</a></li>
+          <li><a href="detector.html">Detector</a></li>
+          <li><a href="precaution.html">Precaution</a></li>
+          <li><button id="mode-toggle">🌙</button></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section class="zigzag-section">
+      <div class="zigzag-container">
+        <!-- Zigzag item 1 -->
+        <div class="zigzag-item" data-aos="fade-right">
+          <div class="zigzag-image">
+            <img src="./picture/gis.jpg" alt="GIS Overview" />
+          </div>
+          <div class="zigzag-text">
+            <h2>What is GIS?</h2>
+            <p>
+              GIS (Geographic Information Systems) is a tool for managing,
+              analyzing, and visualizing geographic data. In earthquake
+              detection, it plays a critical role by:
+              <br /><br />
+              <strong>• Collecting & Analyzing Seismic Data</strong><br />
+              <strong>• Real-Time Monitoring</strong><br />
+              <strong>• Hazard Mapping</strong><br />
+              <strong>• Damage Assessment</strong><br />
+              <strong>• Early Warning Systems</strong><br /><br />
+              GIS helps scientists and emergency responders better understand,
+              predict, and manage earthquake-related risks.
+            </p>
+          </div>
+        </div>
+
+        <!-- Zigzag item 2 -->
+        <div class="zigzag-item reverse" data-aos="fade-left">
+          <div class="zigzag-image">
+            <img
+              src="./picture/earthquake-detection.jpg"
+              alt="Earthquake Detection"
+            />
+          </div>
+          <div class="zigzag-text">
+            <h2>Earthquake Detection</h2>
+            <p>
+              Earthquake detection using GIS involves integrating real-time
+              seismic data from sensors and accelerometers. GIS helps by:
+              <br /><br />
+              <strong>• Real-Time Data Mapping</strong><br />
+              <strong>• Pattern Analysis</strong><br />
+              <strong>• Alert Systems</strong><br />
+              <strong>• Damage Assessment</strong><br /><br />
+              By combining location data with seismic information, GIS enables
+              effective earthquake detection, warning, and response.
+            </p>
+          </div>
+        </div>
+
+        <!-- Zigzag item 3 -->
+        <div class="zigzag-item" data-aos="fade-right">
+          <div class="zigzag-image">
+            <img src="./picture/accelerometer.png" alt="How it Works" />
+          </div>
+          <div class="zigzag-text">
+            <h2>How Our System Works</h2>
+            <p>
+              Our mobile-based system uses the phone's built-in accelerometer to
+              detect abnormal vibrations. These vibrations are analyzed in
+              real-time using frequency thresholds to determine whether they
+              match the pattern of an earthquake. When confirmed, the system
+              triggers alerts and maps the vibration using GIS.
+            </p>
+          </div>
+        </div>
+
+        <!-- Zigzag item 4 -->
+        <div class="zigzag-item reverse" data-aos="fade-left">
+          <div class="zigzag-image">
+            <img src="./picture/mapping.jpg" alt="GIS Role" />
+          </div>
+          <div class="zigzag-text">
+            <h2>Role of GIS in Our App</h2>
+            <p>
+              GIS enables us to visualize the exact location of the tremor
+              detected by your device and combine it with data from other users.
+              This allows mapping of affected zones, early warnings, and
+              area-specific safety suggestions.
+            </p>
+          </div>
+        </div>
+
+        <!-- Zigzag item 5 -->
+        <div class="zigzag-item" data-aos="fade-right">
+          <div class="zigzag-image">
+            <img
+              src="./picture/historic_data.jpg"
+              alt="Prediction using Data"
+            />
+          </div>
+          <div class="zigzag-text">
+            <h2>Earthquake Prediction Using Historical Data</h2>
+            <p>
+              Our system will analyze historical vibration patterns and
+              frequencies to recognize early signs of potential quakes. With
+              time, this data-driven model will improve, helping in proactive
+              alerts in future updates.
+            </p>
+          </div>
+        </div>
+
+        <!-- Zigzag item 6 -->
+        <div class="zigzag-item reverse" data-aos="fade-left">
+          <div class="zigzag-image">
+            <img src="./picture/flowchart.jpg" alt="System Flow" />
+          </div>
+          <div class="zigzag-text">
+            <h2>System Architecture</h2>
+            <p>
+              Below is a simple representation of our architecture from
+              vibration detection to alert generation using GIS. It combines
+              sensor input, frequency analysis, decision logic, and mapping
+              modules.
+            </p>
+          </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div
+          class="zigzag-item"
+          data-aos="fade-up"
+          style="flex-direction: column; text-align: center"
+        >
+          <h2 style="color: #ff5722; font-family: 'Orbitron', sans-serif">
+            GIS vs Traditional Earthquake Systems
+          </h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Traditional</th>
+                <th>Our GIS Approach</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Coverage</td>
+                <td>Station Limited</td>
+                <td>Crowdsourced via Mobile</td>
+              </tr>
+              <tr>
+                <td>Alert Speed</td>
+                <td>Delayed</td>
+                <td>Real-time</td>
+              </tr>
+              <tr>
+                <td>Mapping</td>
+                <td>Manual</td>
+                <td>Automatic GIS</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="zigzag-item reverse" data-aos="fade-left">
+          <div class="zigzag-image">
+            <img src="./picture/real_world.jpg" alt="Use Cases" />
+          </div>
+          <div class="zigzag-text">
+            <h2>Real-World Use Cases</h2>
+            <p>
+              Our app can be life-saving in areas prone to frequent tremors:
+              <br /><br />
+              <strong>• Rural Villages</strong> – Limited monitoring, high
+              vulnerability.<br />
+              <strong>• Schools & Colleges</strong> – Real-time safety
+              measures.<br />
+              <strong>• Smart Cities</strong> – Integrated alerts and response
+              mapping.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQs -->
+        <div
+          class="zigzag-item"
+          data-aos="fade-up"
+          style="flex-direction: column"
+        >
+          <h2 style="color: #ff5722; font-family: 'Orbitron', sans-serif">
+            FAQs
+          </h2>
+          <ul class="faq-list">
+            <li>
+              <strong>Do I need internet for detection?</strong> — No, vibration
+              detection is done offline using the phone's accelerometer.
+              Internet is only needed for alert syncing and GIS mapping.
+            </li>
+            <li>
+              <strong>Is my location shared?</strong> — Only during a confirmed
+              earthquake alert and with full user consent. Privacy is a top
+              priority.
+            </li>
+            <li>
+              <strong
+                >Can it work when my phone is in my pocket or on a
+                table?</strong
+              >
+              — Yes. Our app distinguishes between regular movement and tremors
+              based on frequency and pattern.
+            </li>
+            <li>
+              <strong>What is GIS and why do we use it?</strong> — GIS
+              (Geographic Information System) helps us map and visualize
+              affected areas, making the response smarter and faster.
+            </li>
+            <li>
+              <strong>How does the system avoid false alerts?</strong> — By
+              using a combination of frequency analysis, vibration duration, and
+              cross-verifying signals from multiple users.
+            </li>
+            <li>
+              <strong>Will it work in airplane mode?</strong> — Detection: Yes.
+              Map-based updates: No. Internet is required for real-time mapping.
+            </li>
+            <li>
+              <strong>Does it use a lot of battery?</strong> — The detection is
+              lightweight and optimized for minimal battery usage, especially
+              when running in the background.
+            </li>
+            <li>
+              <strong>What devices are supported?</strong> — Android phones with
+              an accelerometer sensor (most phones have it by default).
+            </li>
+            <li>
+              <strong>How accurate is the prediction system?</strong> — It's
+              experimental right now. With more data, we aim to improve its
+              accuracy over time.
+            </li>
+          </ul>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="zigzag-item center" data-aos="fade-left">
+          <div class="zigzag-text" style="text-align: center">
+            <h2>Join Our Mission to Make Earthquake Alerts Smarter</h2>
+            <p>
+              Be part of our beta community and help us improve by testing
+              real-time detection on your device.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" data-aos="fade-up">
+      <p>Contact us: <label>geospatialvit@gmail.com</label> | <label>8459492318</label></p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <script>
+      let vantaEffect;
+
+      function initializeVanta() {
+        if (vantaEffect) vantaEffect.destroy();
+
+        const width = window.innerWidth;
+        let points, spacing, maxDistance;
+
+        if (width <= 600) {
+          points = 10;
+          spacing = 16;
+          maxDistance = 15;
+        } else if (width <= 1024) {
+          points = 20;
+          spacing = 18;
+          maxDistance = 20;
+        } else {
+          points = 12;
+          spacing = 15;
+          maxDistance = 20;
+        }
+
+        vantaEffect = VANTA.NET({
+          el: "#vanta-bg",
+          mouseControls: true,
+          touchControls: true,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          scale: 1.0,
+          scaleMobile: 1.0,
+          color: 0xff3c00,
+          backgroundColor: "#111",
+          points: points,
+          spacing: spacing,
+          maxDistance: maxDistance,
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", initializeVanta);
+
+      let resizeTimeout;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(initializeVanta, 300);
+      });
+
+      // Toggle mobile navbar
+      const hamburger = document.getElementById("hamburger");
+      const navMenu = document.getElementById("nav-menu");
+
+      hamburger.addEventListener("click", () => {
+        navMenu.classList.toggle("active");
+      });
+
+      // Close mobile menu when clicking on a link
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+          navMenu.classList.remove('active');
+        });
+      });
+
+      // Light/Dark mode toggle
+      const toggle = document.getElementById("mode-toggle");
+      toggle.addEventListener("click", () => {
+        document.body.classList.toggle("light-mode");
+        if (document.body.classList.contains("light-mode")) {
+          toggle.textContent = "☀️";
+        } else {
+          toggle.textContent = "🌙";
+        }
+      });
+
+      AOS.init({
+        offset: 120,
+        duration: 800,
+        easing: "ease-in-out",
+        once: true,
+      });
+    </script>
+  </body>
+</html>

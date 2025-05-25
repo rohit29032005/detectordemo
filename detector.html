@@ -2,124 +2,505 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Shake Detector - ShakeAlert Web</title>
+  <link rel="icon" href="./picture/logo.jpg" type="image/x-icon">
+  
+  <!-- AOS (Animate On Scroll) -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+    /* General Reset */
+    * {
       margin: 0;
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      text-align: center;
-      padding: 20px;
+      padding: 0;
+      box-sizing: border-box;
     }
-    
-    /* Add navbar styles */
-    .navbar {
-      position: fixed;
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #eee;
+      background-color: #111;
+      overflow-x: hidden;
+      transition: background-color 0.4s ease, color 0.4s ease;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    body.light-mode {
+      background-color: #f9f9f9;
+      color: #8c8a8a;
+    }
+
+    #vanta-bg {
+      position: fixed !important;
       top: 0;
       left: 0;
-      right: 0;
-      background-color: #333;
-      overflow: hidden;
-      z-index: 1000;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
     }
-    .navbar a {
-      float: left;
-      display: block;
-      color: #f2f2f2;
-      text-align: center;
-      padding: 14px 20px;
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+      transition: background-color 0.3s ease;
+    }
+
+    body.light-mode .navbar {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .logo {
+      font-weight: 900;
+      font-size: 1.8rem;
+      color: #ff5722;
+      letter-spacing: 1.5px;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.4rem;
+    }
+
+    .nav-links li a,
+    .nav-links li button {
       text-decoration: none;
+      color: inherit;
+      font-weight: 600;
+      font-size: 1rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
     }
-    .navbar a:hover {
-      background-color: #575757;
+
+    .nav-links li a:hover,
+    .nav-links li button:hover {
+      background-color: #ff5722;
       color: white;
     }
-    .navbar a.active {
-      background-color: #007bff;
+
+    .nav-links li a.active {
+      background-color: #ff5722;
+      color: white;
     }
-    
-    /* Add top margin to account for fixed navbar */
-    body {
-      margin-top: 60px;
+
+    body.light-mode .nav-links li a:hover,
+    body.light-mode .nav-links li button:hover {
+      background-color: #ff5722;
+      color: white;
     }
-    
+
+    /* Hamburger Menu */
+    .hamburger {
+      display: none;
+      font-size: 2rem;
+      background: none;
+      border: none;
+      color: #ff5722;
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    /* Detector Container */
+    .detector-container {
+      text-align: center;
+      padding: 140px 20px 120px;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 87, 34, 0.3);
+      margin-top: 100px;
+      margin-bottom: 40px;
+    }
+
+    body.light-mode .detector-container {
+      background-color: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(212, 67, 21, 0.3);
+    }
+
     h1 {
-      color: #222;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #ff5722;
+      letter-spacing: 1.2px;
     }
-    p#status {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #dc3545;
-      max-width: 90%;
-      word-wrap: break-word;
+
+    body.light-mode h1 {
+      color: #d84315;
     }
-    .note {
-      margin-top: 40px;
-      font-size: 0.9rem;
-      color: #6c757d;
+
+    .subtitle {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      color: inherit;
+      opacity: 0.9;
+      line-height: 1.4;
     }
+
+    /* Test Buttons */
     .test-buttons {
-      margin: 20px 0;
+      margin: 30px 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 15px;
       align-items: center;
     }
+
     button {
-      padding: 12px 20px;
-      font-size: 16px;
+      padding: 15px 30px;
+      font-size: 1.1rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 50px;
       cursor: pointer;
-      min-width: 200px;
-      font-weight: bold;
+      width: 100%;
+      max-width: 280px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
+
     .test-btn {
-      background-color: #007bff;
+      background: linear-gradient(45deg, #007bff, #0056b3);
       color: white;
     }
+
     .test-btn:hover {
-      background-color: #0056b3;
+      background: linear-gradient(45deg, #0056b3, #004085);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,123,255,0.4);
     }
+
     .mock-btn {
-      background-color: #28a745;
+      background: linear-gradient(45deg, #28a745, #1e7e34);
       color: white;
     }
+
     .mock-btn:hover {
-      background-color: #1e7e34;
+      background: linear-gradient(45deg, #1e7e34, #155724);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(40,167,69,0.4);
+    }
+
+    /* Status Display */
+    #status {
+      margin-top: 30px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #ff5722;
+      max-width: 100%;
+      word-wrap: break-word;
+      padding: 20px;
+      background-color: rgba(255, 87, 34, 0.1);
+      border-radius: 15px;
+      border: 2px solid rgba(255, 87, 34, 0.3);
+      line-height: 1.4;
+    }
+
+    body.light-mode #status {
+      color: #d84315;
+      background-color: rgba(212, 67, 21, 0.1);
+      border: 2px solid rgba(212, 67, 21, 0.3);
+    }
+
+    /* Notes Container */
+    .notes-container {
+      margin-top: 40px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      border-left: 4px solid #ff5722;
+    }
+
+    body.light-mode .notes-container {
+      background-color: rgba(0, 0, 0, 0.05);
+      border-left: 4px solid #d84315;
+    }
+
+    .note {
+      margin: 12px 0;
+      font-size: 1rem;
+      color: inherit;
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    /* Footer */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      text-align: center;
+      padding: 15px 10px;
+      background: #1a1a1a;
+      color: #ff5722;
+      border-top: 1px solid rgba(255, 87, 34, 0.3);
+      font-size: 1em;
+      box-shadow: 0 -4px 10px rgba(255, 87, 34, 0.2);
+    }
+
+    .footer label {
+      color: #ffffff;
+      text-decoration: none;
+      margin: 0 10px;
+      transition: color 0.3s ease;
+    }
+
+    .footer label:hover {
+      color: #ff5722;
+      text-shadow: 0 0 5px rgba(255, 87, 34, 0.6);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.3rem;
+      }
+
+      .nav-links {
+        gap: 1rem;
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -250px;
+        width: 250px;
+        height: 100vh;
+        background-color: #111;
+        transition: right 0.3s ease;
+        padding-top: 80px;
+        z-index: 15;
+        box-shadow: -2px 0 8px rgba(0,0,0,0.5);
+      }
+
+      .nav-menu.active {
+        right: 0;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 20px;
+        gap: 1.2rem;
+      }
+
+      .nav-links li {
+        width: 100%;
+      }
+
+      .nav-links li a,
+      .nav-links li button {
+        display: block;
+        padding: 1rem;
+        width: 100%;
+        text-align: left;
+      }
+
+      .navbar {
+        justify-content: space-between;
+      }
+
+      .detector-container {
+        padding: 100px 15px 80px;
+        margin-top: 80px;
+        margin-bottom: 80px;
+      }
+
+      button {
+        max-width: 260px;
+        padding: 12px 24px;
+      }
+
+      .footer {
+        padding: 10px 5px;
+        font-size: 0.9em;
+      }
+
+      .footer label {
+        margin: 0 5px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .detector-container {
+        padding: 80px 10px 60px;
+        margin-top: 70px;
+        margin-bottom: 70px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 1.1rem;
+      }
+
+      button {
+        max-width: 240px;
+        padding: 10px 20px;
+        font-size: 1rem;
+      }
+
+      #status {
+        font-size: 1.1rem;
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Add Navigation Bar -->
-  <div class="navbar">
-    <a href="index.html">Home</a>
-    <a href="detector.html" class="active">Detector</a>
+  <div id="vanta-bg"></div>
+
+  <nav class="navbar">
+    <h1 class="logo">Shake Alert</h1>
+    <button class="hamburger" id="hamburger">&#9776;</button>
+    <div class="nav-menu" id="nav-menu">
+      <ul class="nav-links">
+        <li><a href="gis.html">GIS Info</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="3d.html">3D Demo</a></li>
+        <li><a href="detector.html" class="active">Detector</a></li>
+        <li><a href="precaution.html">Precaution</a></li>
+        <li><button id="mode-toggle">🌙</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="detector-container" data-aos="fade-up">
+    <h1>🚨 Shake Detector</h1>
+    <p class="subtitle">Shake your phone to trigger earthquake alert!</p>
+    
+    <div class="test-buttons">
+      <button class="test-btn" onclick="testLocation()">
+        🧪 Test Location Only
+      </button>
+      <button class="mock-btn" onclick="simulateShake()">
+        🎯 Send Mock Shake Data
+      </button>
+    </div>
+    
+    <p id="status">Waiting for motion...</p>
+
+    <div class="notes-container">
+      <p class="note">📱 Works best on mobile devices with accelerometer</p>
+      <p class="note">🔧 Use test buttons above to debug location</p>
+      <p class="note">🌐 Join our community-driven earthquake detection network</p>
+    </div>
   </div>
 
-  <h1>🚨 Shake Detector</h1>
-  <p>Shake your phone to trigger alert!</p>
-  
-  <div class="test-buttons">
-    <button class="test-btn" onclick="testLocation()">
-      🧪 Test Location Only
-    </button>
-    <button class="mock-btn" onclick="simulateShake()">
-      🎯 Send Mock Shake Data
-    </button>
-  </div>
-  
-  <p id="status">Waiting for motion...</p>
+  <footer class="footer">
+    <label>© 2025 Shake Alert - Real-time Earthquake Detection System</label>
+  </footer>
 
-  <p class="note">* Works best on mobile devices with accelerometer</p>
-  <p class="note">Use test buttons above to debug location and Firebase connectivity</p>
+  <!-- AOS.js -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+
+  <!-- Three.js & Vanta.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+
+  <!-- Custom JS -->
+  <script>
+    let vantaEffect;
+
+    function initializeVanta() {
+      if (vantaEffect) vantaEffect.destroy();
+
+      const width = window.innerWidth;
+      let points, spacing, maxDistance;
+
+      if (width <= 600) {
+        points = 10;
+        spacing = 16;
+        maxDistance = 15;
+      } else if (width <= 1024) {
+        points = 20;
+        spacing = 18;
+        maxDistance = 20;
+      } else {
+        points = 12;
+        spacing = 15;
+        maxDistance = 20;
+      }
+
+      vantaEffect = VANTA.NET({
+        el: "#vanta-bg",
+        mouseControls: true,
+        touchControls: true,
+        minHeight: 200.0,
+        minWidth: 200.0,
+        scale: 1.0,
+        scaleMobile: 1.0,
+        color: 0xff3c00,
+        backgroundColor: "#111",
+        points: points,
+        spacing: spacing,
+        maxDistance: maxDistance,
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", initializeVanta);
+
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(initializeVanta, 300);
+    });
+
+    // Toggle mobile navbar
+    const hamburger = document.getElementById("hamburger");
+    const navMenu = document.getElementById("nav-menu");
+
+    hamburger.addEventListener("click", () => {
+      navMenu.classList.toggle("active");
+    });
+
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+      });
+    });
+
+    // Light/Dark mode toggle
+    const toggle = document.getElementById("mode-toggle");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("light-mode");
+      if (document.body.classList.contains("light-mode")) {
+        toggle.textContent = "☀️";
+      } else {
+        toggle.textContent = "🌙";
+      }
+    });
+  </script>
 
   <!-- Updated script reference -->
   <script type="module" src="detector.js"></script>

@@ -1,147 +1,522 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShakeAlert - Earthquake Detection System</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      min-height: 100vh;
-    }
-    
-    .navbar {
-      background-color: rgba(0,0,0,0.2);
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-    }
-    .navbar a {
-      float: left;
-      display: block;
-      color: white;
-      text-align: center;
-      padding: 14px 20px;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .navbar a:hover {
-      background-color: rgba(255,255,255,0.1);
-    }
-    .navbar a.active {
-      background-color: rgba(255,255,255,0.2);
-    }
-    
-    .hero {
-      text-align: center;
-      padding: 100px 20px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    .hero h1 {
-      font-size: 3.5rem;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .hero p {
-      font-size: 1.3rem;
-      margin-bottom: 40px;
-      opacity: 0.9;
-      line-height: 1.6;
-    }
-    
-    .cta-button {
-      display: inline-block;
-      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-      color: white;
-      padding: 15px 30px;
-      text-decoration: none;
-      border-radius: 50px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      transition: transform 0.3s ease;
-    }
-    
-    .cta-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-    }
-    
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 30px;
-      padding: 80px 20px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    
-    .feature {
-      background: rgba(255,255,255,0.1);
-      padding: 30px;
-      border-radius: 15px;
-      text-align: center;
-      backdrop-filter: blur(10px);
-    }
-    
-    .feature h3 {
-      font-size: 1.5rem;
-      margin-bottom: 15px;
-    }
-    
-    .feature p {
-      opacity: 0.9;
-      line-height: 1.5;
-    }
-    
-    .emoji {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      display: block;
-    }
-  </style>
-</head>
-<body>
-  <div class="navbar">
-    <a href="index.html" class="active">Home</a>
-    <a href="detector.html">Detector</a>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Shake Alert</title>
+    <link rel="icon" href="./picture/logo.jpg" type="image/x-icon" />
 
-  <div class="hero">
-    <h1>🚨 ShakeAlert</h1>
-    <p>Advanced earthquake detection system using your device's sensors. Help build a community-driven early warning network.</p>
-    <a href="detector.html" class="cta-button">Start Detecting →</a>
-  </div>
+    <!-- AOS (Animate On Scroll) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"
+      rel="stylesheet"
+    />
 
-  <div class="features">
-    <div class="feature">
-      <span class="emoji">📱</span>
-      <h3>Mobile Detection</h3>
-      <p>Uses your phone's accelerometer to detect earthquake shakes in real-time</p>
+    <style>
+      /* General Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #eee;
+        background-color: #111;
+        overflow-x: hidden;
+        transition: background-color 0.4s ease, color 0.4s ease;
+        min-height: 100vh;
+        position: relative;
+        z-index: 1;
+      }
+
+      body.light-mode {
+        background-color: #f9f9f9;
+        color: #8c8a8a;
+      }
+
+      #vanta-bg {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+      }
+
+      /* Navbar */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 10;
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-mode .navbar {
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.8rem;
+        color: #ff5722;
+        letter-spacing: 1.5px;
+      }
+
+      .nav-links {
+        list-style: none;
+        display: flex;
+        gap: 1.4rem;
+      }
+
+      .nav-links li a,
+      .nav-links li button {
+        text-decoration: none;
+        color: inherit;
+        font-weight: 600;
+        font-size: 1rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.4rem 0.8rem;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .nav-links li a:hover,
+      .nav-links li button:hover {
+        background-color: #ff5722;
+        color: white;
+      }
+
+      body.light-mode .nav-links li a:hover,
+      body.light-mode .nav-links li button:hover {
+        background-color: #ff5722;
+        color: white;
+      }
+
+      /* Hero Section */
+      .hero {
+        text-align: center;
+        padding: 140px 20px 60px;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      .hero h2 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #ff5722;
+        letter-spacing: 1.2px;
+      }
+
+      body.light-mode .hero h2 {
+        color: #d84315;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+        color: inherit;
+      }
+
+      .cta-btn {
+        background-color: #ff5722;
+        color: white;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: 700;
+        box-shadow: 0 6px 10px rgba(255, 87, 34, 0.5);
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .cta-btn:hover {
+        background-color: #e64a19;
+        transform: translateY(-3px);
+      }
+
+      /* Features Section */
+      .features {
+        max-width: 800px;
+        margin: 60px auto 100px;
+        padding: 0 20px;
+        text-align: center;
+      }
+
+      .features h3 {
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+        color: #ff5722;
+      }
+
+      body.light-mode .features h3 {
+        color: #d84315;
+      }
+
+      .features p {
+        font-size: 1.1rem;
+        line-height: 1.5;
+        color: inherit;
+      }
+
+      /* Hamburger Menu */
+      .hamburger {
+        display: none;
+        font-size: 2rem;
+        background: none;
+        border: none;
+        color: #ff5722;
+        cursor: pointer;
+        z-index: 20;
+      }
+
+      /* Footer */
+      .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        text-align: center;
+        padding: 15px 10px;
+        background: #1a1a1a;
+        color: #ff5722;
+        border-top: 1px solid rgba(255, 87, 34, 0.3);
+        font-size: 1em;
+        box-shadow: 0 -4px 10px rgba(255, 87, 34, 0.2);
+      }
+
+      .footer label {
+        color: #ffffff;
+        text-decoration: none;
+        margin: 0 10px;
+        transition: color 0.3s ease;
+      }
+
+      .footer label:hover {
+        color: #ff5722;
+        text-shadow: 0 0 5px rgba(255, 87, 34, 0.6);
+      }
+
+      /* Splash Screen */
+      #splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: radial-gradient(circle at center, #1c1c1c 0%, #000000 100%);
+        background-size: cover;
+        color: #ffffff;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .splash-content {
+        text-align: center;
+        z-index: 2;
+      }
+
+      .splash-logo {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 0 20px #ff5722;
+        margin-bottom: 1rem;
+      }
+
+      .splash-title {
+        font-size: 2.8rem;
+        color: #ff5722;
+        margin-bottom: 0.5rem;
+        letter-spacing: 2px;
+      }
+
+      .splash-tagline {
+        font-size: 1.2rem;
+        font-weight: 400;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .letter-in {
+        opacity: 0;
+        animation: fadeIn 0.3s ease-in forwards;
+        color: #ffffff;
+        font-weight: 400;
+      }
+
+      @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Exit animation */
+      .fade-out {
+        animation: fadeSplash 1s ease forwards;
+      }
+
+      @keyframes fadeSplash {
+        0% { opacity: 1; }
+        100% { opacity: 0; visibility: hidden; }
+      }
+
+      #splash-screen.hidden {
+        display: none !important;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero h2 {
+          font-size: 2.3rem;
+        }
+
+        .nav-links {
+          gap: 1rem;
+        }
+
+        .hamburger {
+          display: block;
+        }
+
+        .nav-menu {
+          position: fixed;
+          top: 0;
+          right: -250px;
+          width: 250px;
+          height: 100vh;
+          background-color: #111;
+          transition: right 0.3s ease;
+          padding-top: 80px;
+          z-index: 15;
+          box-shadow: -2px 0 8px rgba(0,0,0,0.5);
+        }
+
+        .nav-menu.active {
+          right: 0;
+        }
+
+        .nav-links {
+          flex-direction: column;
+          align-items: flex-start;
+          padding-left: 20px;
+          gap: 1.2rem;
+        }
+
+        .nav-links li {
+          width: 100%;
+        }
+
+        .nav-links li a,
+        .nav-links li button {
+          display: block;
+          padding: 1rem;
+          width: 100%;
+          text-align: left;
+        }
+
+        .navbar {
+          justify-content: space-between;
+        }
+
+        .footer {
+          padding: 10px 5px;
+          font-size: 0.9em;
+        }
+
+        .footer label {
+          margin: 0 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+      <div class="splash-content">
+        <img
+          src="./picture/logo.jpg"
+          alt="Shake Alert Logo"
+          class="splash-logo"
+        />
+        <h1 class="splash-title">Shake Alert</h1>
+        <p class="splash-tagline" id="animated-slogan"></p>
+      </div>
     </div>
-    
-    <div class="feature">
-      <span class="emoji">🌍</span>
-      <h3>Location Tracking</h3>
-      <p>Precise GPS coordinates help map earthquake activity across regions</p>
-    </div>
-    
-    <div class="feature">
-      <span class="emoji">⚡</span>
-      <h3>Real-time Alerts</h3>
-      <p>Instant notifications when multiple devices detect seismic activity</p>
-    </div>
-    
-    <div class="feature">
-      <span class="emoji">🤝</span>
-      <h3>Community Network</h3>
-      <p>Collaborative detection system that gets stronger with more participants</p>
-    </div>
-  </div>
-</body>
+
+    <div id="vanta-bg"></div>
+
+    <nav class="navbar">
+      <h1 class="logo">Shake Alert</h1>
+      <button class="hamburger" id="hamburger">&#9776;</button>
+      <div class="nav-menu" id="nav-menu">
+        <ul class="nav-links">
+          <li><a href="gis.html">GIS Info</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="detector.html">Detector</a></li>
+          <li><a href="precaution.html">Precaution</a></li>
+          <li><button id="mode-toggle">🌙</button></li>
+        </ul>
+      </div>
+    </nav>
+
+    <header class="hero" data-aos="fade-up">
+      <h2>Welcome to Shake Alert</h2>
+      <p>Detecting vibrations & potential earthquakes in real time.</p>
+      <a href="detector.html" class="cta-btn">Start Earthquake Detector</a>
+    </header>
+
+    <section class="features" data-aos="fade-right">
+      <h3>How it Works</h3>
+      <p>
+        This system uses your phone's accelerometer to monitor vibrations and
+        classify them as potential earthquakes. Join our community-driven early warning network.
+      </p>
+    </section>
+
+    <footer class="footer">
+      <label>© 2025 Shake Alert - Real-time Earthquake Detection System</label>
+    </footer>
+
+    <!-- AOS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+      AOS.init();
+    </script>
+
+    <!-- Three.js & Vanta.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+      let vantaEffect;
+
+      function initializeVanta() {
+        if (vantaEffect) vantaEffect.destroy();
+
+        const width = window.innerWidth;
+        let points, spacing, maxDistance;
+
+        if (width <= 600) {
+          points = 10;
+          spacing = 16;
+          maxDistance = 15;
+        } else if (width <= 1024) {
+          points = 20;
+          spacing = 18;
+          maxDistance = 20;
+        } else {
+          points = 12;
+          spacing = 15;
+          maxDistance = 20;
+        }
+
+        vantaEffect = VANTA.NET({
+          el: "#vanta-bg",
+          mouseControls: true,
+          touchControls: true,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          scale: 1.0,
+          scaleMobile: 1.0,
+          color: 0xff3c00,
+          backgroundColor: "#111",
+          points: points,
+          spacing: spacing,
+          maxDistance: maxDistance,
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", initializeVanta);
+
+      let resizeTimeout;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(initializeVanta, 300);
+      });
+
+      // Toggle mobile navbar
+      const hamburger = document.getElementById("hamburger");
+      const navMenu = document.getElementById("nav-menu");
+
+      hamburger.addEventListener("click", () => {
+        navMenu.classList.toggle("active");
+      });
+
+      // Close mobile menu when clicking on a link
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+          navMenu.classList.remove('active');
+        });
+      });
+
+      // Light/Dark mode toggle
+      const toggle = document.getElementById("mode-toggle");
+      toggle.addEventListener("click", () => {
+        document.body.classList.toggle("light-mode");
+        if (document.body.classList.contains("light-mode")) {
+          toggle.textContent = "☀️";
+        } else {
+          toggle.textContent = "🌙";
+        }
+      });
+
+      // Splash screen animation
+      const sloganText = "Real-time seismic detection and prediction at your fingertips.";
+      const animatedSlogan = document.getElementById("animated-slogan");
+
+      let index = 0;
+      function showNextLetter() {
+        if (index < sloganText.length) {
+          const span = document.createElement("span");
+          span.textContent = sloganText[index];
+          span.classList.add("letter-in");
+          animatedSlogan.appendChild(span);
+          index++;
+          setTimeout(showNextLetter, 80);
+        }
+      }
+
+      window.addEventListener("load", () => {
+        if (!sessionStorage.getItem("splashShown")) {
+          sessionStorage.setItem("splashShown", "true");
+          showNextLetter();
+          setTimeout(() => {
+            document.getElementById("splash-screen").classList.add("fade-out");
+            setTimeout(() => {
+              document.getElementById("splash-screen").style.display = "none";
+            }, 1000);
+          }, 6500);
+        } else {
+          document.getElementById("splash-screen").style.display = "none";
+        }
+      });
+    </script>
+  </body>
 </html>
