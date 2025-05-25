@@ -3,88 +3,145 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shake Detector - ShakeAlert Web</title>
+  <title>ShakeAlert - Earthquake Detection System</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
       margin: 0;
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+    }
+    
+    .navbar {
+      background-color: rgba(0,0,0,0.2);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .navbar a {
+      float: left;
+      display: block;
+      color: white;
       text-align: center;
-      padding: 20px;
+      padding: 14px 20px;
+      text-decoration: none;
+      font-weight: 500;
     }
-    h1 {
-      color: #222;
+    .navbar a:hover {
+      background-color: rgba(255,255,255,0.1);
     }
-    p#status {
-      margin-top: 20px;
+    .navbar a.active {
+      background-color: rgba(255,255,255,0.2);
+    }
+    
+    .hero {
+      text-align: center;
+      padding: 100px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .hero p {
+      font-size: 1.3rem;
+      margin-bottom: 40px;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      padding: 15px 30px;
+      text-decoration: none;
+      border-radius: 50px;
       font-size: 1.2rem;
       font-weight: bold;
-      color: #dc3545;
-      max-width: 90%;
-      word-wrap: break-word;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
     }
-    .note {
-      margin-top: 40px;
-      font-size: 0.9rem;
-      color: #6c757d;
+    
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
-    .test-buttons {
-      margin: 20px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: center;
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      padding: 80px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
     }
-    button {
-      padding: 12px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      min-width: 200px;
-      font-weight: bold;
+    
+    .feature {
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      backdrop-filter: blur(10px);
     }
-    .test-btn {
-      background-color: #007bff;
-      color: white;
+    
+    .feature h3 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
     }
-    .test-btn:hover {
-      background-color: #0056b3;
+    
+    .feature p {
+      opacity: 0.9;
+      line-height: 1.5;
     }
-    .mock-btn {
-      background-color: #28a745;
-      color: white;
-    }
-    .mock-btn:hover {
-      background-color: #1e7e34;
+    
+    .emoji {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
     }
   </style>
 </head>
 <body>
-
-  <h1>🚨 Shake Detector</h1>
-  <p>Shake your phone to trigger alert!</p>
-  
-  <div class="test-buttons">
-    <button class="test-btn" onclick="testLocation()">
-      🧪 Test Location Only
-    </button>
-    <button class="mock-btn" onclick="simulateShake()">
-      🎯 Send Mock Shake Data
-    </button>
+  <div class="navbar">
+    <a href="index.html" class="active">Home</a>
+    <a href="detector.html">Detector</a>
   </div>
-  
-  <p id="status">Waiting for motion...</p>
 
-  <p class="note">* Works best on mobile devices with accelerometer</p>
-  <p class="note">Use test buttons above to debug location and Firebase connectivity</p>
+  <div class="hero">
+    <h1>🚨 ShakeAlert</h1>
+    <p>Advanced earthquake detection system using your device's sensors. Help build a community-driven early warning network.</p>
+    <a href="detector.html" class="cta-button">Start Detecting →</a>
+  </div>
 
-  <!-- Detector JS -->
-  <script type="module" src="index.js"></script>
+  <div class="features">
+    <div class="feature">
+      <span class="emoji">📱</span>
+      <h3>Mobile Detection</h3>
+      <p>Uses your phone's accelerometer to detect earthquake shakes in real-time</p>
+    </div>
+    
+    <div class="feature">
+      <span class="emoji">🌍</span>
+      <h3>Location Tracking</h3>
+      <p>Precise GPS coordinates help map earthquake activity across regions</p>
+    </div>
+    
+    <div class="feature">
+      <span class="emoji">⚡</span>
+      <h3>Real-time Alerts</h3>
+      <p>Instant notifications when multiple devices detect seismic activity</p>
+    </div>
+    
+    <div class="feature">
+      <span class="emoji">🤝</span>
+      <h3>Community Network</h3>
+      <p>Collaborative detection system that gets stronger with more participants</p>
+    </div>
+  </div>
 </body>
 </html>
