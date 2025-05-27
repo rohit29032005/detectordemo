@@ -1,508 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Shake Detector - ShakeAlert Web</title>
-  <link rel="icon" href="./picture/logo.jpg" type="image/x-icon">
-  
-  <!-- AOS (Animate On Scroll) -->
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
-  
-  <style>
-    /* General Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShakeAlert - Real-Time Earthquake Detection</title>
+    
+    <!-- Primary Leaflet CDN with fallback -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css';" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #eee;
-      background-color: #111;
-      overflow-x: hidden;
-      transition: background-color 0.4s ease, color 0.4s ease;
-      min-height: 100vh;
-      position: relative;
-      z-index: 1;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
 
-    body.light-mode {
-      background-color: #f9f9f9;
-      color: #8c8a8a;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
 
-    #vanta-bg {
-      position: fixed !important;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-    }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
 
-    /* Navbar */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background-color: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
-      position: fixed;
-      width: 100%;
-      top: 0;
-      z-index: 10;
-      transition: background-color 0.3s ease;
-    }
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+            to { text-shadow: 2px 2px 20px rgba(255,255,255,0.5); }
+        }
 
-    body.light-mode .navbar {
-      background-color: rgba(255, 255, 255, 0.8);
-    }
+        .status {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
 
-    .logo {
-      font-weight: 900;
-      font-size: 1.8rem;
-      color: #ff5722;
-      letter-spacing: 1.5px;
-    }
+        .status-success { 
+            background: rgba(76, 175, 80, 0.3); 
+            border-color: #4caf50;
+        }
+        .status-warning { 
+            background: rgba(255, 152, 0, 0.3);
+            border-color: #ff9800;
+        }
+        .status-error { 
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
 
-    .nav-links {
-      list-style: none;
-      display: flex;
-      gap: 1.4rem;
-    }
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
 
-    .nav-links li a,
-    .nav-links li button {
-      text-decoration: none;
-      color: inherit;
-      font-weight: 600;
-      font-size: 1rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.4rem 0.8rem;
-      border-radius: 5px;
-      transition: background-color 0.3s ease;
-    }
+        .test-btn, .mock-btn, .location-btn, .emergency-btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .nav-links li a:hover,
-    .nav-links li button:hover {
-      background-color: #ff5722;
-      color: white;
-    }
+        .test-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
 
-    .nav-links li a.active {
-      background-color: #ff5722;
-      color: white;
-    }
+        .mock-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
 
-    body.light-mode .nav-links li a:hover,
-    body.light-mode .nav-links li button:hover {
-      background-color: #ff5722;
-      color: white;
-    }
+        .location-btn {
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            color: #333;
+        }
 
-    /* Hamburger Menu */
-    .hamburger {
-      display: none;
-      font-size: 2rem;
-      background: none;
-      border: none;
-      color: #ff5722;
-      cursor: pointer;
-      z-index: 20;
-    }
+        .emergency-btn {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            color: white;
+        }
 
-    /* Detector Container */
-    .detector-container {
-      text-align: center;
-      padding: 140px 20px 120px;
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      border: 1px solid rgba(255, 87, 34, 0.3);
-      margin-top: 100px;
-      margin-bottom: 40px;
-    }
+        .test-btn:hover, .mock-btn:hover, .location-btn:hover, .emergency-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
 
-    body.light-mode .detector-container {
-      background-color: rgba(255, 255, 255, 0.3);
-      border: 1px solid rgba(212, 67, 21, 0.3);
-    }
+        .test-btn:active, .mock-btn:active, .location-btn:active, .emergency-btn:active {
+            transform: translateY(0);
+        }
 
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      color: #ff5722;
-      letter-spacing: 1.2px;
-    }
+        /* Map Styles */
+        #map {
+            height: 500px !important;
+            width: 100% !important;
+            min-height: 400px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.1);
+        }
 
-    body.light-mode h1 {
-      color: #d84315;
-    }
+        .leaflet-container {
+            background: #f0f0f0 !important;
+            border-radius: 15px;
+        }
 
-    .subtitle {
-      font-size: 1.3rem;
-      margin-bottom: 2rem;
-      color: inherit;
-      opacity: 0.9;
-      line-height: 1.4;
-    }
+        .map-title {
+            text-align: center;
+            margin: 20px 0 10px 0;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
 
-    /* Test Buttons */
-    .test-buttons {
-      margin: 30px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      align-items: center;
-    }
+        /* Wave Simulation Panel */
+        .wave-simulation {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-    button {
-      padding: 15px 30px;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      width: 100%;
-      max-width: 280px;
-      font-weight: 700;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
+        .wave-simulation h3 {
+            margin-bottom: 15px;
+            color: #4ecdc4;
+            text-align: center;
+        }
 
-    .test-btn {
-      background: linear-gradient(45deg, #007bff, #0056b3);
-      color: white;
-    }
+        .wave-simulation p {
+            margin: 8px 0;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
 
-    .test-btn:hover {
-      background: linear-gradient(45deg, #0056b3, #004085);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,123,255,0.4);
-    }
+        .simulation-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
 
-    .mock-btn {
-      background: linear-gradient(45deg, #28a745, #1e7e34);
-      color: white;
-    }
+        /* Alert Panel */
+        .alert-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 350px;
+            background: rgba(255, 0, 0, 0.95);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 1000;
+            display: none;
+            animation: alertPulse 1s infinite;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.5);
+            border: 2px solid #ff6b6b;
+        }
 
-    .mock-btn:hover {
-      background: linear-gradient(45deg, #1e7e34, #155724);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(40,167,69,0.4);
-    }
+        @keyframes alertPulse {
+            0% { opacity: 0.9; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 0.9; transform: scale(1); }
+        }
 
-    /* Status Display */
-    #status {
-      margin-top: 30px;
-      font-size: 1.3rem;
-      font-weight: bold;
-      color: #ff5722;
-      max-width: 100%;
-      word-wrap: break-word;
-      padding: 20px;
-      background-color: rgba(255, 87, 34, 0.1);
-      border-radius: 15px;
-      border: 2px solid rgba(255, 87, 34, 0.3);
-      line-height: 1.4;
-    }
+        .alert-panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+        }
 
-    body.light-mode #status {
-      color: #d84315;
-      background-color: rgba(212, 67, 21, 0.1);
-      border: 2px solid rgba(212, 67, 21, 0.3);
-    }
+        .alert-panel p {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
 
-    /* Notes Container */
-    .notes-container {
-      margin-top: 40px;
-      padding: 20px;
-      background-color: rgba(255, 255, 255, 0.05);
-      border-radius: 15px;
-      border-left: 4px solid #ff5722;
-    }
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
 
-    body.light-mode .notes-container {
-      background-color: rgba(0, 0, 0, 0.05);
-      border-left: 4px solid #d84315;
-    }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
-    .note {
-      margin: 12px 0;
-      font-size: 1rem;
-      color: inherit;
-      opacity: 0.8;
-      line-height: 1.5;
-    }
+        /* System Status Panel */
+        .system-status {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
 
-    /* Footer */
-    .footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      z-index: 100;
-      text-align: center;
-      padding: 15px 10px;
-      background: #1a1a1a;
-      color: #ff5722;
-      border-top: 1px solid rgba(255, 87, 34, 0.3);
-      font-size: 1em;
-      box-shadow: 0 -4px 10px rgba(255, 87, 34, 0.2);
-    }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
 
-    .footer label {
-      color: #ffffff;
-      text-decoration: none;
-      margin: 0 10px;
-      transition: color 0.3s ease;
-    }
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-    .footer label:hover {
-      color: #ff5722;
-      text-shadow: 0 0 5px rgba(255, 87, 34, 0.6);
-    }
+        .status-card.online {
+            border-color: #4caf50;
+            background: rgba(76, 175, 80, 0.2);
+        }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2.3rem;
-      }
+        .status-card.offline {
+            border-color: #f44336;
+            background: rgba(244, 67, 54, 0.2);
+        }
 
-      .nav-links {
-        gap: 1rem;
-      }
+        .status-card h4 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+        }
 
-      .hamburger {
-        display: block;
-      }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .alert-panel {
+                width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+            
+            .simulation-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            #map {
+                height: 400px !important;
+            }
+        }
 
-      .nav-menu {
-        position: fixed;
-        top: 0;
-        right: -250px;
-        width: 250px;
-        height: 100vh;
-        background-color: #111;
-        transition: right 0.3s ease;
-        padding-top: 80px;
-        z-index: 15;
-        box-shadow: -2px 0 8px rgba(0,0,0,0.5);
-      }
+        /* Fallback Map Styles */
+        .map-fallback {
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            flex-direction: column;
+            text-align: center;
+            padding: 50px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
 
-      .nav-menu.active {
-        right: 0;
-      }
+        .map-fallback h3 {
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
 
-      .nav-links {
-        flex-direction: column;
-        align-items: flex-start;
-        padding-left: 20px;
-        gap: 1.2rem;
-      }
+        .map-fallback button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
 
-      .nav-links li {
-        width: 100%;
-      }
-
-      .nav-links li a,
-      .nav-links li button {
-        display: block;
-        padding: 1rem;
-        width: 100%;
-        text-align: left;
-      }
-
-      .navbar {
-        justify-content: space-between;
-      }
-
-      .detector-container {
-        padding: 100px 15px 80px;
-        margin-top: 80px;
-        margin-bottom: 80px;
-      }
-
-      button {
-        max-width: 260px;
-        padding: 12px 24px;
-      }
-
-      .footer {
-        padding: 10px 5px;
-        font-size: 0.9em;
-      }
-
-      .footer label {
-        margin: 0 5px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .detector-container {
-        padding: 80px 10px 60px;
-        margin-top: 70px;
-        margin-bottom: 70px;
-      }
-
-      h1 {
-        font-size: 2rem;
-      }
-
-      .subtitle {
-        font-size: 1.1rem;
-      }
-
-      button {
-        max-width: 240px;
-        padding: 10px 20px;
-        font-size: 1rem;
-      }
-
-      #status {
-        font-size: 1.1rem;
-        padding: 15px;
-      }
-    }
-  </style>
+        .map-fallback button:hover {
+            background: #45b7aa;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
-  <div id="vanta-bg"></div>
+    <div class="container">
+        <h1>🚨 ShakeAlert - Real-Time Earthquake Detection</h1>
+        
+        <div id="status" class="status">
+            <div class="loading"></div> Initializing ShakeAlert System...
+        </div>
+        
+        <div class="controls">
+            <button onclick="testLocation()" class="location-btn">
+                📍 Test Location
+            </button>
+            <button onclick="simulateShake()" class="test-btn">
+                🚨 Simulate Earthquake
+            </button>
+            <button onclick="checkSystemStatus()" class="mock-btn">
+                🔍 System Status
+            </button>
+            <button onclick="emergencyMode()" class="emergency-btn">
+                🆘 Emergency Mode
+            </button>
+        </div>
 
-  <nav class="navbar">
-    <h1 class="logo">Shake Alert</h1>
-    <button class="hamburger" id="hamburger">&#9776;</button>
-    <div class="nav-menu" id="nav-menu">
-      <ul class="nav-links">
-        <li><a href="gis.html">GIS Info</a></li>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="services.html">Services</a></li>
-        <li><a href="3d.html">3D Demo</a></li>
-        <li><a href="detector.html" class="active">Detector</a></li>
-        <li><a href="precaution.html">Precaution</a></li>
-        <li><button id="mode-toggle">🌙</button></li>
-      </ul>
+        <div class="map-title">🌍 Real-Time Earthquake Monitoring Map</div>
+        <div id="map"></div>
+
+        <div class="wave-simulation">
+            <h3>🌊 Seismic Wave Propagation Simulation</h3>
+            <p>🔵 <strong>P-waves (Primary):</strong> Faster, weaker waves traveling at ~6 km/s</p>
+            <p>🔴 <strong>S-waves (Secondary):</strong> Slower, stronger waves traveling at ~3.5 km/s</p>
+            <p>⚠️ <strong>Early Warning System:</strong> P-wave detection provides critical seconds of advance warning before destructive S-waves arrive</p>
+            
+            <div class="simulation-controls">
+                <button onclick="simulateWavePropagation(28.6139, 77.2090, 20)" class="test-btn">
+                    🏛️ Delhi Earthquake (M6.7)
+                </button>
+                <button onclick="simulateWavePropagation(12.9716, 79.1588, 18)" class="mock-btn">
+                    🏫 VIT Earthquake (M6.0)
+                </button>
+                <button onclick="simulateWavePropagation(19.0760, 72.8777, 22)" class="test-btn">
+                    🏙️ Mumbai Earthquake (M7.3)
+                </button>
+                <button onclick="simulateWavePropagation(35.6762, 139.6503, 25)" class="emergency-btn">
+                    🗾 Tokyo Earthquake (M8.3)
+                </button>
+            </div>
+        </div>
+
+        <div class="system-status">
+            <h3>📊 System Status Monitor</h3>
+            <div class="status-grid" id="statusGrid">
+                <!-- Status cards will be populated by JavaScript -->
+            </div>
+        </div>
     </div>
-  </nav>
 
-  <div class="detector-container" data-aos="fade-up">
-    <h1>🚨 Shake Detector</h1>
-    <p class="subtitle">Shake your phone to trigger earthquake alert!</p>
+    <!-- Leaflet JavaScript with fallback -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js';"></script>
     
-    <div class="test-buttons">
-      <button class="test-btn" onclick="testLocation()">
-        🧪 Test Location Only
-      </button>
-      <button class="mock-btn" onclick="simulateShake()">
-        🎯 Send Mock Shake Data
-      </button>
-    </div>
-    
-    <p id="status">Waiting for motion...</p>
-
-    <div class="notes-container">
-      <p class="note">📱 Works best on mobile devices with accelerometer</p>
-      <p class="note">🔧 Use test buttons above to debug location</p>
-      <p class="note">🌐 Join our community-driven earthquake detection network</p>
-    </div>
-  </div>
-
-  <footer class="footer">
-    <label>© 2025 Shake Alert - Real-time Earthquake Detection System</label>
-  </footer>
-
-  <!-- AOS.js -->
-  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-  <script>
-    AOS.init();
-  </script>
-
-  <!-- Three.js & Vanta.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
-
-  <!-- Custom JS -->
-  <script>
-    let vantaEffect;
-
-    function initializeVanta() {
-      if (vantaEffect) vantaEffect.destroy();
-
-      const width = window.innerWidth;
-      let points, spacing, maxDistance;
-
-      if (width <= 600) {
-        points = 10;
-        spacing = 16;
-        maxDistance = 15;
-      } else if (width <= 1024) {
-        points = 20;
-        spacing = 18;
-        maxDistance = 20;
-      } else {
-        points = 12;
-        spacing = 15;
-        maxDistance = 20;
-      }
-
-      vantaEffect = VANTA.NET({
-        el: "#vanta-bg",
-        mouseControls: true,
-        touchControls: true,
-        minHeight: 200.0,
-        minWidth: 200.0,
-        scale: 1.0,
-        scaleMobile: 1.0,
-        color: 0xff3c00,
-        backgroundColor: "#111",
-        points: points,
-        spacing: spacing,
-        maxDistance: maxDistance,
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", initializeVanta);
-
-    let resizeTimeout;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(initializeVanta, 300);
-    });
-
-    // Toggle mobile navbar
-    const hamburger = document.getElementById("hamburger");
-    const navMenu = document.getElementById("nav-menu");
-
-    hamburger.addEventListener("click", () => {
-      navMenu.classList.toggle("active");
-    });
-
-    // Close mobile menu when clicking on a link
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
-      });
-    });
-
-    // Light/Dark mode toggle
-    const toggle = document.getElementById("mode-toggle");
-    toggle.addEventListener("click", () => {
-      document.body.classList.toggle("light-mode");
-      if (document.body.classList.contains("light-mode")) {
-        toggle.textContent = "☀️";
-      } else {
-        toggle.textContent = "🌙";
-      }
-    });
-  </script>
-
-  <!-- Updated script reference -->
-  <script type="module" src="detector.js"></script>
+    <!-- Firebase JavaScript -->
+    <script type="module" src="detector.js"></script>
 </body>
 </html>
