@@ -1,401 +1,440 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShakeAlert - Real-Time Earthquake Detection</title>
-    
-    <!-- Primary Leaflet CDN with fallback -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
-          onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css';" />
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShakeAlert - Real-Time Earthquake Detection</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            min-height: 100vh;
-            padding: 20px;
-            overflow-x: hidden;
-        }
+  <!-- Primary Leaflet CDN with fallback -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css';" />
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            animation: glow 2s ease-in-out infinite alternate;
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
 
-        @keyframes glow {
-            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-            to { text-shadow: 2px 2px 20px rgba(255,255,255,0.5); }
-        }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
 
-        .status {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
 
-        .status-success { 
-            background: rgba(76, 175, 80, 0.3); 
-            border-color: #4caf50;
-        }
-        .status-warning { 
-            background: rgba(255, 152, 0, 0.3);
-            border-color: #ff9800;
-        }
-        .status-error { 
-            background: rgba(244, 67, 54, 0.3);
-            border-color: #f44336;
-        }
+    @keyframes glow {
+      from {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
 
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
+      to {
+        text-shadow: 2px 2px 20px rgba(255, 255, 255, 0.5);
+      }
+    }
 
-        .test-btn, .mock-btn, .location-btn, .emergency-btn {
-            padding: 15px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-        }
+    .status {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
 
-        .test-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-        }
+    .status-success {
+      background: rgba(76, 175, 80, 0.3);
+      border-color: #4caf50;
+    }
 
-        .mock-btn {
-            background: linear-gradient(45deg, #4ecdc4, #44a08d);
-            color: white;
-        }
+    .status-warning {
+      background: rgba(255, 152, 0, 0.3);
+      border-color: #ff9800;
+    }
 
-        .location-btn {
-            background: linear-gradient(45deg, #a8edea, #fed6e3);
-            color: #333;
-        }
+    .status-error {
+      background: rgba(244, 67, 54, 0.3);
+      border-color: #f44336;
+    }
 
-        .emergency-btn {
-            background: linear-gradient(45deg, #ff9800, #f57c00);
-            color: white;
-        }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
 
-        .test-btn:hover, .mock-btn:hover, .location-btn:hover, .emergency-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        }
+    .test-btn,
+    .mock-btn,
+    .location-btn,
+    .emergency-btn {
+      padding: 15px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
 
-        .test-btn:active, .mock-btn:active, .location-btn:active, .emergency-btn:active {
-            transform: translateY(0);
-        }
+    .test-btn {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+    }
 
-        /* Map Styles */
-        #map {
-            height: 500px !important;
-            width: 100% !important;
-            min-height: 400px;
-            border-radius: 15px;
-            margin: 20px 0;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.1);
-        }
+    .mock-btn {
+      background: linear-gradient(45deg, #4ecdc4, #44a08d);
+      color: white;
+    }
 
-        .leaflet-container {
-            background: #f0f0f0 !important;
-            border-radius: 15px;
-        }
+    .location-btn {
+      background: linear-gradient(45deg, #a8edea, #fed6e3);
+      color: #333;
+    }
 
-        .map-title {
-            text-align: center;
-            margin: 20px 0 10px 0;
-            font-size: 1.5rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
+    .emergency-btn {
+      background: linear-gradient(45deg, #ff9800, #f57c00);
+      color: white;
+    }
 
-        /* Wave Simulation Panel */
-        .wave-simulation {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+    .test-btn:hover,
+    .mock-btn:hover,
+    .location-btn:hover,
+    .emergency-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
 
-        .wave-simulation h3 {
-            margin-bottom: 15px;
-            color: #4ecdc4;
-            text-align: center;
-        }
+    .test-btn:active,
+    .mock-btn:active,
+    .location-btn:active,
+    .emergency-btn:active {
+      transform: translateY(0);
+    }
 
-        .wave-simulation p {
-            margin: 8px 0;
-            opacity: 0.9;
-            line-height: 1.5;
-        }
+    /* Map Styles */
+    #map {
+      height: 500px !important;
+      width: 100% !important;
+      min-height: 400px;
+      border-radius: 15px;
+      margin: 20px 0;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.1);
+    }
 
-        .simulation-controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
+    .leaflet-container {
+      background: #f0f0f0 !important;
+      border-radius: 15px;
+    }
 
-        /* Alert Panel */
-        .alert-panel {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 350px;
-            background: rgba(255, 0, 0, 0.95);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            z-index: 1000;
-            display: none;
-            animation: alertPulse 1s infinite;
-            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.5);
-            border: 2px solid #ff6b6b;
-        }
+    .map-title {
+      text-align: center;
+      margin: 20px 0 10px 0;
+      font-size: 1.5rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
 
-        @keyframes alertPulse {
-            0% { opacity: 0.9; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.02); }
-            100% { opacity: 0.9; transform: scale(1); }
-        }
+    /* Wave Simulation Panel */
+    .wave-simulation {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 25px;
+      margin: 20px 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-        .alert-panel h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.3rem;
-        }
+    .wave-simulation h3 {
+      margin-bottom: 15px;
+      color: #4ecdc4;
+      text-align: center;
+    }
 
-        .alert-panel p {
-            margin: 5px 0;
-            line-height: 1.4;
-        }
+    .wave-simulation p {
+      margin: 8px 0;
+      opacity: 0.9;
+      line-height: 1.5;
+    }
 
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
+    .simulation-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+    /* Alert Panel */
+    .alert-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 350px;
+      background: rgba(255, 0, 0, 0.95);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      z-index: 1000;
+      display: none;
+      animation: alertPulse 1s infinite;
+      box-shadow: 0 10px 30px rgba(255, 0, 0, 0.5);
+      border: 2px solid #ff6b6b;
+    }
 
-        /* System Status Panel */
-        .system-status {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-        }
+    @keyframes alertPulse {
+      0% {
+        opacity: 0.9;
+        transform: scale(1);
+      }
 
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
+      50% {
+        opacity: 1;
+        transform: scale(1.02);
+      }
 
-        .status-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+      100% {
+        opacity: 0.9;
+        transform: scale(1);
+      }
+    }
 
-        .status-card.online {
-            border-color: #4caf50;
-            background: rgba(76, 175, 80, 0.2);
-        }
+    .alert-panel h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.3rem;
+    }
 
-        .status-card.offline {
-            border-color: #f44336;
-            background: rgba(244, 67, 54, 0.2);
-        }
+    .alert-panel p {
+      margin: 5px 0;
+      line-height: 1.4;
+    }
 
-        .status-card h4 {
-            color: #4ecdc4;
-            margin-bottom: 10px;
-        }
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, .3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .controls {
-                grid-template-columns: 1fr;
-            }
-            
-            .alert-panel {
-                width: 90%;
-                right: 5%;
-                left: 5%;
-            }
-            
-            .simulation-controls {
-                grid-template-columns: 1fr;
-            }
-            
-            #map {
-                height: 400px !important;
-            }
-        }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
-        /* Fallback Map Styles */
-        .map-fallback {
-            height: 500px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            flex-direction: column;
-            text-align: center;
-            padding: 50px;
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-        }
+    /* System Status Panel */
+    .system-status {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+    }
 
-        .map-fallback h3 {
-            margin-bottom: 15px;
-            color: #4ecdc4;
-        }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
 
-        .map-fallback button {
-            background: #4ecdc4;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 15px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
+    .status-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-        .map-fallback button:hover {
-            background: #45b7aa;
-            transform: translateY(-2px);
-        }
-    </style>
+    .status-card.online {
+      border-color: #4caf50;
+      background: rgba(76, 175, 80, 0.2);
+    }
+
+    .status-card.offline {
+      border-color: #f44336;
+      background: rgba(244, 67, 54, 0.2);
+    }
+
+    .status-card h4 {
+      color: #4ecdc4;
+      margin-bottom: 10px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .alert-panel {
+        width: 90%;
+        right: 5%;
+        left: 5%;
+      }
+
+      .simulation-controls {
+        grid-template-columns: 1fr;
+      }
+
+      #map {
+        height: 400px !important;
+      }
+    }
+
+    /* Fallback Map Styles */
+    .map-fallback {
+      height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      flex-direction: column;
+      text-align: center;
+      padding: 50px;
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+    }
+
+    .map-fallback h3 {
+      margin-bottom: 15px;
+      color: #4ecdc4;
+    }
+
+    .map-fallback button {
+      background: #4ecdc4;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .map-fallback button:hover {
+      background: #45b7aa;
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>🚨 ShakeAlert - Real-Time Earthquake Detection</h1>
-        
-        <div id="status" class="status">
-            <div class="loading"></div> Initializing ShakeAlert System...
-        </div>
-        
-        <div class="controls">
-            <button onclick="testLocation()" class="location-btn">
-                📍 Test Location
-            </button>
-            <button onclick="simulateShake()" class="test-btn">
-                🚨 Simulate Earthquake
-            </button>
-            <button onclick="checkSystemStatus()" class="mock-btn">
-                🔍 System Status
-            </button>
-            <button onclick="emergencyMode()" class="emergency-btn">
-                🆘 Emergency Mode
-            </button>
-        </div>
+  <div class="container">
+    <h1>🚨 ShakeAlert - Real-Time Earthquake Detection</h1>
 
-        <div class="map-title">🌍 Real-Time Earthquake Monitoring Map</div>
-        <div id="map"></div>
-
-        <div class="wave-simulation">
-            <h3>🌊 Seismic Wave Propagation Simulation</h3>
-            <p>🔵 <strong>P-waves (Primary):</strong> Faster, weaker waves traveling at ~6 km/s</p>
-            <p>🔴 <strong>S-waves (Secondary):</strong> Slower, stronger waves traveling at ~3.5 km/s</p>
-            <p>⚠️ <strong>Early Warning System:</strong> P-wave detection provides critical seconds of advance warning before destructive S-waves arrive</p>
-            
-            <div class="simulation-controls">
-                <button onclick="simulateWavePropagation(28.6139, 77.2090, 20)" class="test-btn">
-                    🏛️ Delhi Earthquake (M6.7)
-                </button>
-                <button onclick="simulateWavePropagation(12.9716, 79.1588, 18)" class="mock-btn">
-                    🏫 VIT Earthquake (M6.0)
-                </button>
-                <button onclick="simulateWavePropagation(19.0760, 72.8777, 22)" class="test-btn">
-                    🏙️ Mumbai Earthquake (M7.3)
-                </button>
-                <button onclick="simulateWavePropagation(35.6762, 139.6503, 25)" class="emergency-btn">
-                    🗾 Tokyo Earthquake (M8.3)
-                </button>
-            </div>
-        </div>
-
-        <div class="system-status">
-            <h3>📊 System Status Monitor</h3>
-            <div class="status-grid" id="statusGrid">
-                <!-- Status cards will be populated by JavaScript -->
-            </div>
-        </div>
+    <div id="status" class="status">
+      <div class="loading"></div> Initializing ShakeAlert System...
     </div>
 
-    <!-- Leaflet JavaScript with fallback -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
-            onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js';"></script>
-    
-    <!-- Firebase JavaScript -->
-    <script type="module" src="detector.js"></script>
+    <div class="controls">
+
+      <button onclick="testLocation()" class="location-btn">
+        📍 Test Location
+      </button>
+      <button onclick="simulateShake()" class="test-btn">
+        🚨 Simulate Earthquake
+      </button>
+      <button onclick="checkSystemStatus()" class="mock-btn">
+        🔍 System Status
+      </button>
+      <button onclick="emergencyMode()" class="emergency-btn">
+        🆘 Emergency Mode
+      </button>
+      <!-- Add this button in your controls section -->
+      <button onclick="testLocationDetailed()" class="location-btn">
+        🔍 Test Real GPS Location
+      </button>
+
+    </div>
+
+    <div class="map-title">🌍 Real-Time Earthquake Monitoring Map</div>
+    <div id="map"></div>
+
+    <div class="wave-simulation">
+      <h3>🌊 Seismic Wave Propagation Simulation</h3>
+      <p>🔵 <strong>P-waves (Primary):</strong> Faster, weaker waves traveling at ~6 km/s</p>
+      <p>🔴 <strong>S-waves (Secondary):</strong> Slower, stronger waves traveling at ~3.5 km/s</p>
+      <p>⚠️ <strong>Early Warning System:</strong> P-wave detection provides critical seconds of advance warning before
+        destructive S-waves arrive</p>
+
+      <div class="simulation-controls">
+        <button onclick="simulateWavePropagation(28.6139, 77.2090, 20)" class="test-btn">
+          🏛️ Delhi Earthquake (M6.7)
+        </button>
+        <button onclick="simulateWavePropagation(12.9716, 79.1588, 18)" class="mock-btn">
+          🏫 VIT Earthquake (M6.0)
+        </button>
+        <button onclick="simulateWavePropagation(19.0760, 72.8777, 22)" class="test-btn">
+          🏙️ Mumbai Earthquake (M7.3)
+        </button>
+        <button onclick="simulateWavePropagation(35.6762, 139.6503, 25)" class="emergency-btn">
+          🗾 Tokyo Earthquake (M8.3)
+        </button>
+      </div>
+    </div>
+
+    <div class="system-status">
+      <h3>📊 System Status Monitor</h3>
+      <div class="status-grid" id="statusGrid">
+        <!-- Status cards will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JavaScript with fallback -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js';"></script>
+
+  <!-- Firebase JavaScript -->
+  <script type="module" src="detector.js"></script>
 </body>
+
 </html>

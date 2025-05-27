@@ -1,4 +1,4 @@
-// Enhanced ShakeAlert - FIXED VERSION
+// Enhanced ShakeAlert - FIXED LOCATION VERSION
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
@@ -151,72 +151,389 @@ function updateStatus(message, className = "") {
     }
 }
 
-// Test Location Function
-window.testLocation = async function() {
-    try {
-        updateStatus("📡 Testing location services...", "status-warning");
-        
+// ENHANCED LOCATION DETECTION - REAL GPS
+async function getCurrentPosition() {
+    return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
-            updateStatus("⚠️ Geolocation not supported, using VIT Vellore", "status-warning");
+            console.log("❌ Geolocation not supported, using fallback");
+            updateStatus("⚠️ GPS not supported, using VIT fallback", "status-warning");
+            resolve(FALLBACK_COORDS);
             return;
         }
         
+        // High accuracy GPS options
+        const options = {
+            enableHighAccuracy: true,    // Use GPS instead of network
+            timeout: 15000,              // Wait up to 15 seconds
+            maximumAge: 0                // Don't use cached location
+        };
+        
+        console.log("📡 Requesting high-accuracy GPS location...");
+        updateStatus("📡 Getting your real GPS location...", "status-warning");
+        
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                const lat = position.coords.latitude.toFixed(4);
-                const lng = position.coords.longitude.toFixed(4);
-                updateStatus(`✅ Location: ${lat}, ${lng}`, "status-success");
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
                 
-                if (map) {
-                    map.setView([position.coords.latitude, position.coords.longitude], 10);
-                    L.marker([position.coords.latitude, position.coords.longitude])
-                        .addTo(map)
-                        .bindPopup("📍 Your Current Location")
-                        .openPopup();
-                }
+                console.log("✅ Real GPS location obtained:");
+                console.log(`📍 Lat: ${lat}, Lng: ${lng}`);
+                console.log(`🎯 Accuracy: ${accuracy} meters`);
+                
                 systemStatus.locationEnabled = true;
+                updateStatus(`✅ Real GPS location found! Accuracy: ${accuracy.toFixed(0)}m`, "status-success");
+                
+                resolve({
+                    latitude: lat,
+                    longitude: lng,
+                    accuracy: accuracy
+                });
             },
             (error) => {
-                updateStatus("⚠️ Using fallback location: VIT Vellore", "status-warning");
-                systemStatus.locationEnabled = false;
-                if (map) {
-                    map.setView([12.9716, 79.1588], 10);
+                let errorMsg = "";
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMsg = "Location permission denied";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg = "Location unavailable";
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg = "Location request timeout";
+                        break;
+                    default:
+                        errorMsg = "Unknown location error";
                 }
-            }
+                
+                console.error("❌ GPS error:", errorMsg);
+                updateStatus(`⚠️ GPS failed: ${errorMsg}. Using VIT fallback.`, "status-warning");
+                
+                systemStatus.locationEnabled = false;
+                resolve(FALLBACK_COORDS);
+            },
+            options
         );
+    });
+}
+
+// Enhanced location name resolution
+async function getReadableLocation(lat, lng) {
+    try {
+        // Check if it's near VIT (within 1km)
+        const vitDistance = calculateDistance(lat, lng, 12.9716, 79.1588);
+        if (vitDistance < 1) {
+            return "VIT Vellore Campus, Tamil Nadu";
+        }
+        
+        // Check for major Indian cities
+        const cities = [
+            { name: "Delhi", lat: 28.6139, lng: 77.2090, radius: 50 },
+            { name: "Mumbai", lat: 19.0760, lng: 72.8777, radius: 50 },
+            { name: "Bangalore", lat: 12.9716, lng: 77.5946, radius: 50 },
+            { name: "Chennai", lat: 13.0827, lng: 80.2707, radius: 50 },
+            { name: "Kolkata", lat: 22.5726, lng: 88.3639, radius: 50 },
+            { name: "Hyderabad", lat: 17.3850, lng: 78.4867, radius: 50 },
+            { name: "Pune", lat: 18.5204, lng: 73.8567, radius: 50 },
+            { name: "Jaipur", lat: 26.9124, lng: 75.7873, radius: 50 }
+        ];
+        
+        for (const city of cities) {
+            const distance = calculateDistance(lat, lng, city.lat, city.lng);
+            if (distance < city.radius) {
+                return `${city.name} Region, India (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+            }
+        }
+        
+        // For other locations
+        return `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}, India`;
+        
+    } catch (error) {
+        console.error("Location resolution error:", error);
+        return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    }
+}
+
+// Calculate distance between two points
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+
+// Test Location Function - ENHANCED
+window.testLocation = async function() {
+    try {
+        updateStatus("📡 Testing real GPS location detection...", "status-warning");
+        
+        const coords = await getCurrentPosition();
+        const location = await getReadableLocation(coords.latitude, coords.longitude);
+        
+        updateStatus(
+            `✅ Your Real Location:<br>📍 ${location}<br>🎯 Accuracy: ${coords.accuracy ? coords.accuracy.toFixed(0) + 'm' : 'Unknown'}`,
+            "status-success"
+        );
+        
+        if (map) {
+            map.setView([coords.latitude, coords.longitude], 15);
+            L.marker([coords.latitude, coords.longitude])
+                .addTo(map)
+                .bindPopup(`📍 Your Real Location<br>${location}`)
+                .openPopup();
+        }
+        
+        console.log("📍 Final location data:", {
+            coordinates: coords,
+            readableLocation: location
+        });
+        
     } catch (error) {
         updateStatus(`❌ Location test failed: ${error.message}`, "status-error");
     }
 };
 
-// Simulate Shake Function
+// Detailed GPS Test Function
+window.testLocationDetailed = async function() {
+    updateStatus("🔍 Running detailed GPS test...", "status-warning");
+    
+    if (!navigator.geolocation) {
+        updateStatus("❌ Geolocation not supported on this device", "status-error");
+        return;
+    }
+    
+    const options = {
+        enableHighAccuracy: true,
+        timeout: 20000,  // Extended timeout
+        maximumAge: 0
+    };
+    
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            const timestamp = new Date(position.timestamp);
+            
+            const location = await getReadableLocation(lat, lng);
+            
+            updateStatus(
+                `✅ Detailed GPS Results:<br>
+                📍 Location: ${location}<br>
+                🎯 Accuracy: ${accuracy.toFixed(1)}m<br>
+                📊 Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}<br>
+                ⏰ Time: ${timestamp.toLocaleTimeString()}`,
+                "status-success"
+            );
+            
+            // Update map with high zoom
+            if (map) {
+                map.setView([lat, lng], 18);
+                L.marker([lat, lng])
+                    .addTo(map)
+                    .bindPopup(`
+                        📍 Your Precise Location<br>
+                        ${location}<br>
+                        Accuracy: ${accuracy.toFixed(1)}m
+                    `)
+                    .openPopup();
+                
+                // Add accuracy circle
+                L.circle([lat, lng], {
+                    radius: accuracy,
+                    color: '#0066ff',
+                    fillColor: '#0066ff',
+                    fillOpacity: 0.1
+                }).addTo(map);
+            }
+            
+            console.log("🔍 Detailed GPS data:", {
+                latitude: lat,
+                longitude: lng,
+                accuracy: accuracy,
+                timestamp: timestamp,
+                readableLocation: location
+            });
+        },
+        (error) => {
+            let errorMsg = "";
+            let solution = "";
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMsg = "Location permission denied";
+                    solution = "Click the 🔒 lock icon in address bar and allow location";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMsg = "Location unavailable";
+                    solution = "Check GPS settings and try outdoors";
+                    break;
+                case error.TIMEOUT:
+                    errorMsg = "Location request timeout";
+                    solution = "Try again or move to better GPS signal area";
+                    break;
+                default:
+                    errorMsg = "Unknown location error";
+                    solution = "Check browser permissions and GPS settings";
+            }
+            
+            updateStatus(
+                `❌ GPS Error: ${errorMsg}<br>💡 Solution: ${solution}`,
+                "status-error"
+            );
+        },
+        options
+    );
+};
+
+// Simulate Shake Function - USES REAL LOCATION
 window.simulateShake = async function() {
     try {
-        updateStatus("🚨 Simulating earthquake...", "status-warning");
+        updateStatus("🚨 Simulating earthquake with real location...", "status-warning");
+        
+        // Get real GPS coordinates
+        const coords = await getCurrentPosition();
+        const location = await getReadableLocation(coords.latitude, coords.longitude);
+        const testIntensity = 18;
         
         const testData = {
             timestamp: Date.now(),
-            intensity: 18,
+            intensity: testIntensity,
             x: 1.5, y: 2.0, z: 9.8,
-            location: "VIT Vellore, Tamil Nadu",
-            coordinates: { lat: 12.9716, lng: 79.1588 }
+            location: location,
+            coordinates: { 
+                lat: coords.latitude, 
+                lng: coords.longitude 
+            },
+            accuracy: coords.accuracy || 0,
+            deviceInfo: {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform
+            }
         };
+        
+        console.log("🚨 Earthquake simulation data:", testData);
         
         if (database) {
             const shakeRef = ref(database, 'shakes/');
             const newShakeRef = push(shakeRef);
             await set(newShakeRef, testData);
-            updateStatus("✅ Earthquake simulation sent to Firebase!", "status-success");
+            updateStatus(`✅ Earthquake logged at your real location: ${location}`, "status-success");
         } else {
             // Local simulation
             startWaveSimulation(testData);
-            updateStatus("✅ Earthquake simulation (offline mode)!", "status-success");
+            updateStatus(`✅ Earthquake simulation (offline): ${location}`, "status-success");
         }
         
     } catch (error) {
         updateStatus(`❌ Simulation failed: ${error.message}`, "status-error");
     }
 };
+
+// Device motion handling - USES REAL LOCATION
+function initializeDeviceMotion() {
+    try {
+        if (!('DeviceOrientationEvent' in window)) {
+            console.log("⚠️ Device motion not supported");
+            return;
+        }
+        
+        // Request permission for iOS 13+
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission()
+                .then(permission => {
+                    if (permission === 'granted') {
+                        window.addEventListener("devicemotion", handleDeviceMotion);
+                        systemStatus.deviceMotionEnabled = true;
+                        console.log("✅ Device motion initialized with permission");
+                    }
+                });
+        } else {
+            window.addEventListener("devicemotion", handleDeviceMotion);
+            systemStatus.deviceMotionEnabled = true;
+            console.log("✅ Device motion initialized");
+        }
+        
+    } catch (error) {
+        console.error("❌ Device motion initialization error:", error);
+    }
+}
+
+// Handle device motion - REAL LOCATION LOGGING
+async function handleDeviceMotion(event) {
+    try {
+        const now = Date.now();
+        if (now - lastShake < UPDATE_INTERVAL) return;
+        
+        const acc = event.accelerationIncludingGravity || event.acceleration;
+        if (!acc || acc.x === null || acc.y === null || acc.z === null) return;
+        
+        const { x, y, z } = acc;
+        const total = Math.sqrt(x*x + y*y + z*z);
+        
+        if (total > SHAKE_THRESHOLD) {
+            lastShake = now;
+            console.log(`🚨 Real shake detected! Intensity: ${total.toFixed(2)}`);
+            
+            // Log shake with REAL location
+            await logShakeWithRealLocation(total, x, y, z);
+        }
+        
+    } catch (error) {
+        console.error("❌ Motion handling error:", error);
+    }
+}
+
+// Log shake with real location
+async function logShakeWithRealLocation(intensity, x, y, z) {
+    try {
+        updateStatus("📡 Logging real earthquake data...", "status-warning");
+        
+        // Get real GPS coordinates
+        const coords = await getCurrentPosition();
+        const location = await getReadableLocation(coords.latitude, coords.longitude);
+        
+        const shakeData = {
+            timestamp: Date.now(),
+            intensity: intensity,
+            x: x, y: y, z: z,
+            location: location,
+            coordinates: { 
+                lat: coords.latitude, 
+                lng: coords.longitude 
+            },
+            accuracy: coords.accuracy || 0,
+            deviceInfo: {
+                userAgent: navigator.userAgent.substring(0, 100), // Limit length
+                platform: navigator.platform
+            }
+        };
+        
+        console.log("📊 Real shake data:", shakeData);
+        
+        if (database) {
+            const shakeRef = ref(database, 'shakes/');
+            const newShakeRef = push(shakeRef);
+            await set(newShakeRef, shakeData);
+            updateStatus(`✅ Real earthquake logged: ${location}`, "status-success");
+        } else {
+            // Store locally if Firebase unavailable
+            localStorage.setItem(`shake_${Date.now()}`, JSON.stringify(shakeData));
+            updateStatus(`✅ Earthquake logged locally: ${location}`, "status-warning");
+        }
+        
+        // Start wave simulation
+        startWaveSimulation(shakeData);
+        
+    } catch (error) {
+        console.error("❌ Shake logging error:", error);
+        updateStatus(`❌ Failed to log earthquake: ${error.message}`, "status-error");
+    }
+}
 
 // Start wave simulation
 function startWaveSimulation(shake) {
@@ -265,10 +582,11 @@ function plotShakeOnMap(shake) {
                 <p><strong>Intensity:</strong> ${intensity.toFixed(1)}</p>
                 <p><strong>Location:</strong> ${shake.location}</p>
                 <p><strong>Time:</strong> ${new Date(shake.timestamp).toLocaleTimeString()}</p>
+                ${shake.accuracy ? `<p><strong>GPS Accuracy:</strong> ${shake.accuracy.toFixed(0)}m</p>` : ''}
             </div>
         `).openPopup();
         
-        map.setView([lat, lng], 8);
+        map.setView([lat, lng], 12);
         
     } catch (error) {
         console.error("Error plotting shake:", error);
@@ -414,11 +732,11 @@ window.checkSystemStatus = function() {
             </div>
             <div class="status-card ${systemStatus.locationEnabled ? 'online' : 'offline'}">
                 <h4>📍 Location Services</h4>
-                <p>${systemStatus.locationEnabled ? 'Enabled' : 'Fallback Mode'}</p>
+                <p>${systemStatus.locationEnabled ? 'Real GPS Active' : 'Fallback Mode'}</p>
             </div>
-            <div class="status-card online">
-                <h4>🌊 Wave Simulation</h4>
-                <p>Active (${activeSimulations.length} running)</p>
+            <div class="status-card ${systemStatus.deviceMotionEnabled ? 'online' : 'offline'}">
+                <h4>📱 Motion Detection</h4>
+                <p>${systemStatus.deviceMotionEnabled ? 'Active' : 'Unavailable'}</p>
             </div>
         `;
     }
@@ -447,16 +765,16 @@ window.emergencyMode = function() {
     
     emergencyDiv.innerHTML = `
         <h2>🆘 Emergency Mode Active</h2>
-        <p>Core earthquake detection is working!</p>
+        <p>Core earthquake detection with real GPS is working!</p>
         <div style="margin: 20px 0;">
             <button onclick="simulateShake(); this.parentElement.parentElement.remove();" style="
                 background: #ff6b6b; color: white; border: none; padding: 12px 20px; 
                 border-radius: 5px; cursor: pointer; margin: 5px; font-weight: bold;
-            ">🚨 Test Earthquake</button>
-            <button onclick="testLocation(); this.parentElement.parentElement.remove();" style="
+            ">🚨 Test Real Location Earthquake</button>
+            <button onclick="testLocationDetailed(); this.parentElement.parentElement.remove();" style="
                 background: #4ecdc4; color: white; border: none; padding: 12px 20px; 
                 border-radius: 5px; cursor: pointer; margin: 5px; font-weight: bold;
-            ">📍 Test Location</button>
+            ">📍 Test Detailed GPS</button>
         </div>
         <button onclick="this.parentElement.remove()" style="
             background: white; color: #333; border: none; padding: 10px 20px; 
@@ -486,14 +804,15 @@ function requestNotificationPermission() {
 // Main initialization
 async function initializeSystem() {
     try {
-        updateStatus("🔄 Initializing ShakeAlert System...", "status-warning");
+        updateStatus("🔄 Initializing ShakeAlert with Real GPS...", "status-warning");
         
         // Initialize components
         await initializeFirebaseApp();
         initializeMap();
+        initializeDeviceMotion();
         requestNotificationPermission();
         
-        updateStatus("✅ ShakeAlert System Ready!", "status-success");
+        updateStatus("✅ ShakeAlert System Ready with Real Location Detection!", "status-success");
         
     } catch (error) {
         console.error("System initialization error:", error);
@@ -508,4 +827,4 @@ if (document.readyState === 'loading') {
     initializeSystem();
 }
 
-console.log("🚨 ShakeAlert system loaded");
+console.log("🚨 ShakeAlert system loaded with real GPS detection");
