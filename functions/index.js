@@ -34,7 +34,7 @@ export const detectCollectiveShake = onValueCreated(
 
     const currentTime = Date.now();
     const RADIUS_KM = 5;
-    const MIN_UNIQUE_DEVICES = 3; // Changed from MIN_REPORTS to MIN_UNIQUE_DEVICES
+    const MIN_UNIQUE_DEVICES = 2; // Changed from MIN_REPORTS to MIN_UNIQUE_DEVICES
     const TIME_WINDOW_MS = 30000; // 30 seconds
 
     // Calculate geohash for the new shake

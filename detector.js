@@ -661,6 +661,52 @@ function plotShakeOnMap(shake) {
   }
 }
 
+// Listen for nearby alerts and show message
+function listenForNearbyAlerts(userLat, userLng) {
+  const shakesRef = ref(database, "shakes/");
+  onValue(shakesRef, (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+    Object.values(data).forEach((shake) => {
+      if (shake.coordinates) {
+        const dist = calculateDistance(
+          userLat,
+          userLng,
+          shake.coordinates.lat,
+          shake.coordinates.lng
+        );
+        if (dist <= 5) {
+          showAlertMessage(shake); // Show alert message to user
+        }
+      }
+    });
+  });
+}
+
+// Show alert message (customize as needed)
+function showAlertMessage(shake) {
+  // Example: show a banner on the page
+  let alertPanel = document.getElementById("alert-panel");
+  if (!alertPanel) {
+    alertPanel = document.createElement("div");
+    alertPanel.id = "alert-panel";
+    alertPanel.className = "alert-panel";
+    document.body.appendChild(alertPanel);
+  }
+  alertPanel.innerHTML = `
+    <h3>🚨 Earthquake Alert!</h3>
+    <p><strong>Intensity:</strong> ${shake.intensity.toFixed(1)}</p>
+    <p><strong>Location:</strong> ${shake.location}</p>
+    <p><strong>Time:</strong> ${new Date(shake.timestamp).toLocaleTimeString()}</p>
+    <p style="color: #ffff00; font-weight: bold;">⚠️ Take cover now!</p>
+  `;
+  alertPanel.style.display = "block";
+  setTimeout(() => {
+    alertPanel.style.display = "none";
+  }, 10000);
+}
+
+
 // Animate waves
 function animateWaves(shake) {
   if (!map || !shake.coordinates) return;
