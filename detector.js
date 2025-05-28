@@ -683,29 +683,52 @@ function listenForNearbyAlerts(userLat, userLng) {
 }
 
 
-// Show alert message (customize as needed)
-function showAlertMessage(shake) {
-  // Example: show a banner on the page
-  let alertPanel = document.getElementById("alert-panel");
-  if (!alertPanel) {
-    alertPanel = document.createElement("div");
-    alertPanel.id = "alert-panel";
-    alertPanel.className = "alert-panel";
-    document.body.appendChild(alertPanel);
-  }
-  alertPanel.innerHTML = `
-    <h3>🚨 Earthquake Alert!</h3>
-    <p><strong>Intensity:</strong> ${shake.intensity.toFixed(1)}</p>
-    <p><strong>Location:</strong> ${shake.location}</p>
-    <p><strong>Time:</strong> ${new Date(shake.timestamp).toLocaleTimeString()}</p>
-    <p style="color: #ffff00; font-weight: bold;">⚠️ Take cover now!</p>
-  `;
-  alertPanel.style.display = "block";
-  setTimeout(() => {
-    alertPanel.style.display = "none";
-  }, 10000);
-}
+function showAlertMessage(alert) {
+    let isOwnShake = false;
+    // Check if lastShakeEvent is close in time and space to this alert
+    if (lastShakeEvent) {
+        const timeDiff = Math.abs(alert.timestamp - lastShakeEvent.timestamp);
+        const dist = calculateDistance(
+            alert.coordinates.lat,
+            alert.coordinates.lng,
+            lastShakeEvent.lat,
+            lastShakeEvent.lng
+        );
+        if (timeDiff < 15000 && dist < 0.2) { // 15 seconds, 200 meters
+            isOwnShake = true;
+        }
+    }
 
+    let alertPanel = document.getElementById("alert-panel");
+    if (!alertPanel) {
+        alertPanel = document.createElement("div");
+        alertPanel.id = "alert-panel";
+        alertPanel.className = "alert-panel";
+        document.body.appendChild(alertPanel);
+    }
+
+    if (isOwnShake) {
+        alertPanel.innerHTML = `
+            <h3>🚨 Earthquake Alert! (Your Device Detected Shaking)</h3>
+            <p><strong>Intensity:</strong> ${alert.intensity ? alert.intensity.toFixed(1) : 'N/A'}</p>
+            <p><strong>Location:</strong> ${alert.location}</p>
+            <p><strong>Time:</strong> ${new Date(alert.timestamp).toLocaleTimeString()}</p>
+            <p style="color: #ff4444; font-weight: bold;">⚠️ Take cover now! Your phone detected shaking.</p>
+        `;
+    } else {
+        alertPanel.innerHTML = `
+            <h3>🚨 Earthquake Alert Nearby</h3>
+            <p><strong>Intensity:</strong> ${alert.intensity ? alert.intensity.toFixed(1) : 'N/A'}</p>
+            <p><strong>Location:</strong> ${alert.location}</p>
+            <p><strong>Time:</strong> ${new Date(alert.timestamp).toLocaleTimeString()}</p>
+            <p style="color: #ffff00; font-weight: bold;">⚠️ Take cover! Others nearby detected shaking.</p>
+        `;
+    }
+    alertPanel.style.display = "block";
+    setTimeout(() => {
+        alertPanel.style.display = "none";
+    }, 10000);
+}
 
 // Animate waves
 function animateWaves(shake) {
