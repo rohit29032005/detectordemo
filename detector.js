@@ -661,27 +661,27 @@ function plotShakeOnMap(shake) {
   }
 }
 
-// Listen for nearby alerts and show message
 function listenForNearbyAlerts(userLat, userLng) {
-  const shakesRef = ref(database, "shakes/");
-  onValue(shakesRef, (snapshot) => {
+  const alertsRef = ref(database, "alerts/");
+  onValue(alertsRef, (snapshot) => {
     const data = snapshot.val();
     if (!data) return;
-    Object.values(data).forEach((shake) => {
-      if (shake.coordinates) {
+    Object.values(data).forEach((alert) => {
+      if (alert.coordinates) {
         const dist = calculateDistance(
           userLat,
           userLng,
-          shake.coordinates.lat,
-          shake.coordinates.lng
+          alert.coordinates.lat,
+          alert.coordinates.lng
         );
         if (dist <= 5) {
-          showAlertMessage(shake); // Show alert message to user
+          showAlertMessage(alert); // Show alert message to user
         }
       }
     });
   });
 }
+
 
 // Show alert message (customize as needed)
 function showAlertMessage(shake) {
