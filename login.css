@@ -1,0 +1,233 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: auto;
+}
+
+#vanta-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none; 
+  background-color: #121212;
+}
+
+
+.login-container {
+  margin-top: -0.3em;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  padding-bottom: 70px;
+}
+
+.login-box {
+  backdrop-filter: blur(20px);
+  background-color: rgba(0, 0, 0, 0.6);
+  background: rgba(30, 30, 30, 0.85);
+  border: 1px solid rgba(255, 87, 34, 0.3);
+  padding: 40px;
+  width: 360px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(255, 87, 34, 0.3);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.login-box:hover {
+  transform: scale(1.02);
+}
+
+h2 {
+  font-size: 1.8em;
+  color: #ff5722;
+  margin-bottom: 10px;
+}
+
+h2.glow {
+  text-shadow: 0 0 10px #ff5722, 0 0 20px #ff5722;
+}
+
+p {
+  font-size: 0.9em;
+  color: #BBBBBB;
+  margin-bottom: 20px;
+}
+
+form label {
+  display: block;
+  font-size: 0.85em;
+  color: #CCCCCC;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+form input[type="email"],
+form input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #444;
+  background-color: #2A2A2A;
+  color: #FFFFFF;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 0.95em;
+  outline: none;
+  transition: 0.3s;
+}
+
+form input:focus {
+  border-color: #ff5722;
+  box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+}
+
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #ff5722, #ff784e);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  font-size: 1em;
+  cursor: pointer;
+  margin-bottom: 15px;
+  transition: transform 0.2s ease;
+}
+
+.login-button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px #ff5722;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 15px 0;
+  color: #AAAAAA;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background-color: #333;
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.google-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #222;
+  color: #ff5722;
+  border: 1px solid #ff5722;
+  border-radius: 10px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.google-button:hover {
+  background-color: #ff5722;
+  color: white;
+  box-shadow: 0 0 10px #ff5722;
+}
+
+.signup-text {
+  font-size: 0.9em;
+  color: #CCCCCC;
+  margin-top: 15px;
+}
+
+.signup-text a {
+  color: #ff784e;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.signup-text a:hover {
+  text-decoration: underline;
+}
+.popup {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(145deg, #ff5722, #e64a19);
+  color: #fff;
+  padding: 15px 25px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.4s ease;
+}
+
+.popup.show {
+  opacity: 1;
+  bottom: 60px;
+}
+
+.popup-icon {
+  font-size: 1.2rem;
+}
+
+canvas {
+  position: fixed !important;
+  z-index: -1 !important;
+  top: 0;
+  left: 0;
+}
+
+.footer {
+  position: fixed;
+  color: #ff5722;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  margin-top: 5em;
+  text-align: center;
+  padding-top: 15px;
+  background: #1a1a1a;
+  border-top: 1px solid rgba(255, 87, 34, 0.3);
+  font-size: 1em;
+  box-shadow: 0 -4px 10px rgba(255, 87, 34, 0.2);
+}
+
+.footer label {
+  color: #ffffff;
+  text-decoration: none;
+  margin: 0 10px;
+  transition: color 0.3s ease;
+}
+
+.footer label:hover {
+  color: #ff5722;
+  text-shadow: 0 0 5px rgba(255, 87, 34, 0.6);
+}
