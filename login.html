@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Shake Alert/Login</title>
+  <link rel="icon" href="./picture/logo.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="login.css"/>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+
+</head>
+<body>
+  <!-- Vanta background container -->
+  <div id="vanta-bg"></div>
+
+  <div class="login-container" data-aos="zoom-in" data-aos-duration="1000">
+    <div class="login-box">
+      <h2 class="glow">Welcome Back</h2>
+      <p>Please enter your details to sign in.</p>
+
+      <form id="login-form">
+        <label for="email">E-Mail Address</label>
+        <input type="email" id="email" placeholder="Enter your email" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required />
+
+        <button type="submit" class="login-button">Sign in</button>
+
+        <div class="divider"><span>OR</span></div>
+
+        <button type="button" class="google-button" onclick="googleSignIn()">Sign in with Google</button>
+      </form>
+
+      <p class="signup-text">Don't have an account yet? <a href="signup.html">Sign Up</a></p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Contact us: <label>geospatialvit@gmail.com</label> | <label>8459492318</label></p>
+  </footer>
+
+  <!-- JS files -->
+  <script type="module" src="login.js"></script>
+  <script>
+    let vantaEffect;
+
+    function initializeVanta() {
+      if (vantaEffect) vantaEffect.destroy();
+
+      const width = window.innerWidth;
+      let points, spacing, maxDistance;
+
+      if (width <= 600) {
+        // Small screens (phones)
+        points = 10;
+        spacing = 16;
+        maxDistance = 15;
+      } else if (width <= 1024) {
+        // Medium screens (tablets, small laptops)
+        points = 20;
+        spacing = 18;
+        maxDistance = 20;
+      } else {
+        // Large screens (desktops)
+        points = 12;
+        spacing = 15;
+        maxDistance = 20;
+      }
+
+      vantaEffect = VANTA.NET({
+        el: "#vanta-bg",
+        mouseControls: true,
+        touchControls: true,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        color: 0xff3c00,
+        backgroundColor: "#111",
+        points: points,
+        spacing: spacing,
+        maxDistance: maxDistance
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", initializeVanta);
+
+    // Optional: only reinitialize after user stops resizing for smoother UX
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(initializeVanta, 300); // debounce resize
+    });
+  </script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+
+</body>
+</html>
