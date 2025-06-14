@@ -184,3 +184,4 @@ function logout() {
   auth.signOut();
   window.location.href = "login.html"; // or wherever your login page is
 }
+

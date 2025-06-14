@@ -47,19 +47,17 @@ router.post("/send-reset-email", async (req, res) => {
       const user = await getUserByEmail(email);
       
       if (!user) {
-        // Security: Don't reveal whether email exists or not
-        // Return success message even if user doesn't exist
-        return res.json({ 
-          message: "If this email is registered, you will receive a password reset link",
-          success: true
+        return res.status(404).json({ 
+          message: "User not found",
+          success: false
         });
       }
 
       // Additional user validations
       if (user.isDeleted) {
-        return res.json({ 
-          message: "If this email is registered, you will receive a password reset link",
-          success: true
+        return res.status(404).json({ 
+          message: "User not found",
+          success: false
         });
       }
 
@@ -69,10 +67,6 @@ router.post("/send-reset-email", async (req, res) => {
           success: false
         });
       }
-
-      // Note: JWT tokens are stateless, so we can't check for recent tokens
-      // If you need rate limiting, consider using Redis or database logging
-      // For now, we'll skip this check since JWT tokens don't store state
 
     } catch (dbError) {
       console.error("Database validation error:", dbError);
@@ -84,9 +78,6 @@ router.post("/send-reset-email", async (req, res) => {
 
     // Token generation and email sending
     try {
-      // Note: JWT tokens are stateless, so we don't need to clean up existing tokens
-      // They will expire automatically
-      
       // Generate reset token using TokenModel
       const resetToken = TokenModel.createResetToken(email, 1); // 1 hour expiry
 
@@ -94,7 +85,6 @@ router.post("/send-reset-email", async (req, res) => {
       const result = await mailService.sendPasswordResetEmail(email, resetToken);
 
       if (!result.success) {
-        // JWT tokens expire automatically, no manual cleanup needed
         console.error("Email sending failed:", result.error);
         return res.status(500).json({ 
           message: "Failed to send password reset email",
@@ -127,7 +117,6 @@ router.post("/send-reset-email", async (req, res) => {
     });
   }
 });
-
 // Verify reset token with database validation
 router.post("/verify-reset-token", async (req, res) => {
   try {

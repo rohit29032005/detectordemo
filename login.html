@@ -9,7 +9,7 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
-
+  <script  type="module" src="login.js"></script>
 </head>
 <body>
   <!-- Vanta background container -->
@@ -26,6 +26,8 @@
 
         <label for="password">Password</label>
         <input type="password" id="password" placeholder="Enter your password" required />
+        
+        <a href="#" class="forgot-password-link" onclick="openForgotPasswordModal()">Forgot Password?</a>
 
         <button type="submit" class="login-button">Sign in</button>
 
@@ -38,15 +40,64 @@
     </div>
   </div>
 
+  <!-- Forgot Password Modal -->
+  <div class="modal-overlay" id="forgotPasswordModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeForgotPasswordModal()">&times;</button>
+      <h3>Reset Password</h3>
+      <div class="success-message" id="successMessage">
+        ✅ Verification email sent successfully! Please check your inbox.
+      </div>
+      <div class="error-message" id="errorMessage">
+        ❌ Something went wrong. Please try again.
+      </div>
+      <p>Enter your email address and we'll send you a verification link to reset your password.</p>
+      <form id="forgot-password-form">
+        <input type="email" id="forgotEmail" placeholder="Enter your email address" required />
+        <button type="submit" class="modal-button" id="sendEmailBtn">
+          Send Verification Email
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal (appears when coming from email link) -->
+  <div class="modal-overlay" id="resetPasswordModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeResetPasswordModal()">&times;</button>
+      <h3>Create New Password</h3>
+      <div class="success-message" id="resetSuccessMessage">
+        ✅ Password reset successfully! You can now log in with your new password.
+      </div>
+      <div class="error-message" id="resetErrorMessage">
+        ❌ Failed to reset password. Please try again.
+      </div>
+      <p>Please enter your new password below.</p>
+      <form id="reset-password-form">
+        <label for="newPassword">New Password</label>
+        <input type="password" id="newPassword" placeholder="Enter new password" required />
+        <div id="passwordStrength" class="password-strength"></div>
+        
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" placeholder="Confirm new password" required />
+        
+        <button type="submit" class="modal-button" id="resetPasswordBtn">
+          Reset Password
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer">
     <p>Contact us: <label>geospatialvit@gmail.com</label> | <label>8459492318</label></p>
   </footer>
 
   <!-- JS files -->
-  <script type="module" src="login.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
     let vantaEffect;
+    let resetToken = null;
 
     function initializeVanta() {
       if (vantaEffect) vantaEffect.destroy();
@@ -55,17 +106,14 @@
       let points, spacing, maxDistance;
 
       if (width <= 600) {
-        // Small screens (phones)
         points = 10;
         spacing = 16;
         maxDistance = 15;
       } else if (width <= 1024) {
-        // Medium screens (tablets, small laptops)
         points = 20;
         spacing = 18;
         maxDistance = 20;
       } else {
-        // Large screens (desktops)
         points = 12;
         spacing = 15;
         maxDistance = 20;
@@ -87,19 +135,343 @@
       });
     }
 
-    document.addEventListener("DOMContentLoaded", initializeVanta);
+    // Check URL parameters for reset token
+    function checkResetToken() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      
+      if (token) {
+        resetToken = token;
+        // Show reset password modal instead of login form
+        openResetPasswordModal();
+        // Verify token with backend
+        verifyResetToken(token);
+      }
+    }
 
-    // Optional: only reinitialize after user stops resizing for smoother UX
+    // Verify reset token with backend
+    async function verifyResetToken(token) {
+      try {
+        const response = await fetch('http://localhost:5000/api/mail/verify-reset-token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: token })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          showError('Invalid or expired reset token. Please request a new one.');
+          closeResetPasswordModal();
+          openForgotPasswordModal();
+        }
+      } catch (error) {
+        console.error('Token verification error:', error);
+        showError('Network error. Please try again.');
+      }
+    }
+
+    // Modal functions for forgot password
+    function openForgotPasswordModal() {
+      const modal = document.getElementById('forgotPasswordModal');
+      modal.classList.add('show');
+      document.getElementById('forgotEmail').focus();
+    }
+
+    function closeForgotPasswordModal() {
+      const modal = document.getElementById('forgotPasswordModal');
+      modal.classList.remove('show');
+      // Reset form and messages
+      document.getElementById('forgot-password-form').reset();
+      document.getElementById('successMessage').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+      document.getElementById('sendEmailBtn').disabled = false;
+      document.getElementById('sendEmailBtn').innerHTML = 'Send Verification Email';
+    }
+
+    // Modal functions for reset password
+    function openResetPasswordModal() {
+      const modal = document.getElementById('resetPasswordModal');
+      modal.classList.add('show');
+      document.getElementById('newPassword').focus();
+    }
+
+    function closeResetPasswordModal() {
+      const modal = document.getElementById('resetPasswordModal');
+      modal.classList.remove('show');
+      // Reset form and messages
+      document.getElementById('reset-password-form').reset();
+      document.getElementById('resetSuccessMessage').classList.remove('show');
+      document.getElementById('resetErrorMessage').classList.remove('show');
+      document.getElementById('resetPasswordBtn').disabled = false;
+      document.getElementById('resetPasswordBtn').innerHTML = 'Reset Password';
+      const passwordStrength = document.getElementById('passwordStrength');
+      if (passwordStrength) {
+        passwordStrength.style.display = 'none';
+      }
+      
+      // Clear URL parameters
+      const url = new URL(window.location);
+      url.searchParams.delete('token');
+      window.history.replaceState({}, document.title, url);
+      resetToken = null;
+    }
+
+    // Password strength checker
+    function checkPasswordStrength(password) {
+      const strengthDiv = document.getElementById('passwordStrength');
+      
+      if (!strengthDiv) return;
+      
+      if (!password) {
+        strengthDiv.style.display = 'none';
+        return;
+      }
+
+      let strength = 0;
+      let message = '';
+
+      // Length check
+      if (password.length >= 8) strength += 1;
+      if (password.length >= 12) strength += 1;
+
+      // Character variety checks
+      if (/[a-z]/.test(password)) strength += 1;
+      if (/[A-Z]/.test(password)) strength += 1;
+      if (/[0-9]/.test(password)) strength += 1;
+      if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+
+      strengthDiv.style.display = 'block';
+      
+      if (strength < 3) {
+        strengthDiv.className = 'password-strength weak';
+        message = 'Weak password. Use at least 8 characters with mixed case, numbers, and symbols.';
+      } else if (strength < 5) {
+        strengthDiv.className = 'password-strength medium';
+        message = 'Medium strength. Consider adding more variety.';
+      } else {
+        strengthDiv.className = 'password-strength strong';
+        message = 'Strong password!';
+      }
+      
+      strengthDiv.textContent = message;
+    }
+
+    // Show error popup
+    function showError(message) {
+      showPopup(message, 'error');
+    }
+
+    // Show success popup
+    function showSuccess(message) {
+      showPopup(message, 'success');
+    }
+
+    // Show popup notification
+    function showPopup(message, type = 'info') {
+      const popup = document.createElement('div');
+      popup.className = `popup ${type}`;
+      popup.innerHTML = `
+        <span class="popup-icon">${type === 'error' ? '❌' : type === 'success' ? '✅' : '🔔'}</span>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(popup);
+      
+      setTimeout(() => popup.classList.add('show'), 10);
+      setTimeout(() => {
+        popup.classList.remove('show');
+        setTimeout(() => popup.remove(), 300);
+      }, 5000);
+    }
+
+    // Close modals when clicking outside
+    document.getElementById('forgotPasswordModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeForgotPasswordModal();
+      }
+    });
+
+    document.getElementById('resetPasswordModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeResetPasswordModal();
+      }
+    });
+
+    // Handle forgot password form submission
+    document.getElementById('forgot-password-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('forgotEmail').value;
+      const btn = document.getElementById('sendEmailBtn');
+      const successMsg = document.getElementById('successMessage');
+      const errorMsg = document.getElementById('errorMessage');
+      
+      // Hide previous messages
+      successMsg.classList.remove('show');
+      errorMsg.classList.remove('show');
+      
+      // Disable button and show loading
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Sending...';
+      
+      try {
+        const response = await fetch('http://localhost:5000/api/mail/send-reset-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          successMsg.classList.add('show');
+          btn.innerHTML = 'Send Another Email';
+          
+          // Auto close modal after 3 seconds
+          setTimeout(() => {
+            closeForgotPasswordModal();
+          }, 3000);
+        } else {
+          errorMsg.textContent = '❌ ' + (data.message || 'Failed to send reset email');
+          errorMsg.classList.add('show');
+          btn.innerHTML = 'Send Verification Email';
+        }
+      } catch (error) {
+        console.error('Send reset email error:', error);
+        errorMsg.textContent = '❌ Network error. Please try again.';
+        errorMsg.classList.add('show');
+        btn.innerHTML = 'Send Verification Email';
+      }
+      
+      btn.disabled = false;
+    });
+
+    // Handle reset password form submission
+    document.getElementById('reset-password-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const btn = document.getElementById('resetPasswordBtn');
+      const successMsg = document.getElementById('resetSuccessMessage');
+      const errorMsg = document.getElementById('resetErrorMessage');
+      
+      // Hide previous messages
+      successMsg.classList.remove('show');
+      errorMsg.classList.remove('show');
+      
+      // Validation
+      if (newPassword.length < 8) {
+        errorMsg.textContent = '❌ Password must be at least 8 characters long';
+        errorMsg.classList.add('show');
+        return;
+      }
+      
+      if (newPassword !== confirmPassword) {
+        errorMsg.textContent = '❌ Passwords do not match';
+        errorMsg.classList.add('show');
+        return;
+      }
+      
+      if (!resetToken) {
+        errorMsg.textContent = '❌ Invalid reset session. Please start over.';
+        errorMsg.classList.add('show');
+        return;
+      }
+      
+      // Disable button and show loading
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Resetting...';
+      
+      try {
+        const response = await fetch('http://localhost:5000/api/mail/reset-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            token: resetToken,
+            newPassword: newPassword 
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          successMsg.classList.add('show');
+          btn.innerHTML = 'Password Reset Successfully!';
+          
+          // Redirect to login after 2 seconds
+          setTimeout(() => {
+            closeResetPasswordModal();
+            showSuccess('Password reset successfully! You can now log in.');
+          }, 2000);
+        } else {
+          errorMsg.textContent = '❌ ' + (data.message || 'Failed to reset password');
+          errorMsg.classList.add('show');
+          btn.innerHTML = 'Reset Password';
+          btn.disabled = false;
+        }
+      } catch (error) {
+        console.error('Reset password error:', error);
+        errorMsg.textContent = '❌ Network error. Please try again.';
+        errorMsg.classList.add('show');
+        btn.innerHTML = 'Reset Password';
+        btn.disabled = false;
+      }
+    });
+
+    // Handle main login form
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Add your login logic here
+      console.log('Login form submitted');
+    });
+
+    // Google Sign In function
+    function googleSignIn() {
+      // Add your Google Sign In logic here
+      console.log('Google Sign In clicked');
+    }
+
+    // Password strength checking
+    const newPasswordInput = document.getElementById('newPassword');
+    if (newPasswordInput) {
+      newPasswordInput.addEventListener('input', function(e) {
+        checkPasswordStrength(e.target.value);
+      });
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (document.getElementById('forgotPasswordModal').classList.contains('show')) {
+          closeForgotPasswordModal();
+        }
+        if (document.getElementById('resetPasswordModal').classList.contains('show')) {
+          closeResetPasswordModal();
+        }
+      }
+    });
+
+    // Initialize everything when DOM is loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      initializeVanta();
+      checkResetToken(); // Check if user came from email link
+      AOS.init(); // Initialize AOS animations
+    });
+
+    // Handle window resize
     let resizeTimeout;
     window.addEventListener("resize", () => {
       clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(initializeVanta, 300); // debounce resize
+      resizeTimeout = setTimeout(initializeVanta, 300);
     });
   </script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>
-    AOS.init();
-  </script>
-
 </body>
 </html>

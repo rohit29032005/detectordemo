@@ -134,7 +134,7 @@ class MailService {
   }async sendPasswordResetEmail(email, resetToken, userName = '') {
   try {
     // ✅ FIXED: Point to frontend page with token parameter
-    const resetLink = `${this.appUrl}?token=${resetToken}`;
+    const resetLink = `${this.appUrl}/detectordemo/login.html?token=${resetToken}`;
     // Alternative if your HTML is in a specific path:
     // const resetLink = `${this.appUrl}/index.html?token=${resetToken}`;
     
