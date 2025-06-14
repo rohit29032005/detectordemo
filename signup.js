@@ -1,28 +1,32 @@
 // Import Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC0UAvyj2f6oX0Bi6t52pi-5EBERI7oFDU",
-  authDomain: "earthlanding-21773.firebaseapp.com",
-  projectId: "earthlanding-21773",
-  storageBucket: "earthlanding-21773.firebasestorage.app",
-  messagingSenderId: "591653055766",
-  appId: "1:591653055766:web:b9e55cdaf6c2a9ae407437"
+    apiKey: "AIzaSyBa93VJg0nCsbl-jciLGgL8TrKyBdc3S5c",
+    authDomain: "intern1-ebc8e.firebaseapp.com",
+    projectId: "intern1-ebc8e",
+    storageBucket: "intern1-ebc8e.firebasestorage.app",
+    messagingSenderId: "1018536934697",
+    appId: "1:1018536934697:web:147ebe1c7d8d7113238b38"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Show pop-up animation
-function showPopup(message) {
+// API Base URL - adjust this to your backend URL
+const API_BASE_URL = 'http://localhost:5000/api/auth'; // Change this to your actual backend URL
+
+// Show popup notification
+function showPopup(message, isError = false) {
   const popup = document.createElement('div');
   popup.classList.add('popup');
+  if (isError) {
+    popup.style.backgroundColor = '#ff4444';
+  }
   popup.innerText = message;
   document.body.appendChild(popup);
 
@@ -38,56 +42,94 @@ function showPopup(message) {
   }, 3000);
 }
 
-// Signup Form Submission
+// Regular Email/Password Signup
 document.getElementById('signup-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const phone = document.getElementById('phone').value;
+  
+  // Get form elements with error checking
+  const nameElement = document.getElementById('name');
+  const emailElement = document.getElementById('email');
+  const passwordElement = document.getElementById('password');
+  const phoneElement = document.getElementById('phone') || document.getElementById('phoneNumber');
+  
+  // Check if all required elements exist
+  if (!nameElement || !emailElement || !passwordElement) {
+    showPopup('Form elements not found. Please check your HTML.', true);
+    return;
+  }
+  
+  const name = nameElement.value;
+  const email = emailElement.value;
+  const password = passwordElement.value;
+  const phoneNumber = phoneElement ? phoneElement.value : '';
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // Send verification email
-    await sendEmailVerification(user);
-
-    // Save user data to Firestore with uid as document ID
-    await setDoc(doc(db, "VITstudents", user.uid), {
+    const requestBody = {
       name: name,
       email: email,
-      phone: phone,
-      password: password // Storing password in plain text is not secure
+      password: password
+    };
+
+    // Only add phoneNumber if it has a value
+    if (phoneNumber && phoneNumber.trim() !== '') {
+      requestBody.phoneNumber = phoneNumber.trim();
+    }
+
+    const response = await fetch(`${API_BASE_URL}/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
     });
 
-    showPopup('Account created successfully! Verification email sent.');
+    const data = await response.json();
+
+    if (response.ok) {
+      showPopup('Account created successfully!');
+      // Optionally redirect or clear form
+      const form = document.getElementById('signup-form');
+      if (form) form.reset();
+    } else {
+      showPopup(data.message || 'Signup failed', true);
+    }
   } catch (error) {
-    console.error("Error signing up:", error.message);
-    alert('Error: ' + error.message);
+    console.error('Signup error:', error);
+    showPopup('Network error. Please try again.', true);
   }
 });
 
-// Google Sign-In
+// Google Sign-In for Signup
 window.googleSignIn = async function googleSignIn() {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
+    
+    // Get the ID token
+    const idToken = await user.getIdToken();
 
-    // Save user data to Firestore with uid as document ID if new
-    await setDoc(doc(db, "VITstudents", user.uid), {
-      name: user.displayName,
-      email: user.email,
-      phone: user.phoneNumber || '',
-      password: 'Google Sign-In' // Placeholder text as password is handled by Google
+    // Send token to your backend
+    const response = await fetch(`${API_BASE_URL}/google-signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: idToken
+      })
     });
 
-    showPopup('Signed in with Google successfully!');
+    const data = await response.json();
+
+    if (response.ok) {
+      showPopup('Google signup successful!');
+      // Handle successful signup (redirect, store user data, etc.)
+      console.log('User data:', data.user);
+    } else {
+      showPopup(data.message || 'Google signup failed', true);
+    }
   } catch (error) {
-    console.error("Error with Google sign-in:", error.message);
-    alert('Error: ' + error.message);
+    console.error("Error with Google sign-in:", error);
+    showPopup('Google sign-in failed: ' + error.message, true);
   }
 };
-
-
-
