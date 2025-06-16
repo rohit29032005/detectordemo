@@ -20,7 +20,7 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // API Base URL - Update this to match your backend server
-const API_BASE_URL = 'http://localhost:5000/api/auth'; // Change this to your actual backend URL
+const API_BASE_URL = 'https://detector-t406.onrender.com/api/auth'; // Change this to your actual backend URL
 
 // Show pop-up animation
 function showPopup(message, type = "info") {

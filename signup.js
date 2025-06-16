@@ -18,7 +18,7 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 // API Base URL - adjust this to your backend URL
-const API_BASE_URL = 'http://localhost:5000/api/auth'; // Change this to your actual backend URL
+const API_BASE_URL = 'https://detector-t406.onrender.com/api/auth'; // Change this to your actual backend URL
 
 // Show popup notification
 function showPopup(message, isError = false) {

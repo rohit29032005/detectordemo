@@ -152,7 +152,7 @@
     // Verify reset token with backend
     async function verifyResetToken(token) {
       try {
-        const response = await fetch('http://localhost:5000/api/mail/verify-reset-token', {
+        const response = await fetch('https://detector-t406.onrender.com/api/mail/verify-reset-token', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -318,7 +318,7 @@
       btn.innerHTML = '<span class="loading"></span> Sending...';
       
       try {
-        const response = await fetch('http://localhost:5000/api/mail/send-reset-email', {
+        const response = await fetch('https://detector-t406.onrender.com/api/mail/send-reset-email', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -389,7 +389,7 @@
       btn.innerHTML = '<span class="loading"></span> Resetting...';
       
       try {
-        const response = await fetch('http://localhost:5000/api/mail/reset-password', {
+        const response = await fetch('https://detector-t406.onrender.com/api/mail/reset-password', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
