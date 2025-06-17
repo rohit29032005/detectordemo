@@ -352,126 +352,205 @@
     });
 
     // Handle reset password form submission
-    document.getElementById('reset-password-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const newPassword = document.getElementById('newPassword').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const btn = document.getElementById('resetPasswordBtn');
-      const successMsg = document.getElementById('resetSuccessMessage');
-      const errorMsg = document.getElementById('resetErrorMessage');
-      
-      // Hide previous messages
-      successMsg.classList.remove('show');
-      errorMsg.classList.remove('show');
-      
-      // Validation
-      if (newPassword.length < 8) {
-        errorMsg.textContent = '❌ Password must be at least 8 characters long';
-        errorMsg.classList.add('show');
-        return;
-      }
-      
-      if (newPassword !== confirmPassword) {
-        errorMsg.textContent = '❌ Passwords do not match';
-        errorMsg.classList.add('show');
-        return;
-      }
-      
-      if (!resetToken) {
-        errorMsg.textContent = '❌ Invalid reset session. Please start over.';
-        errorMsg.classList.add('show');
-        return;
-      }
-      
-      // Disable button and show loading
-      btn.disabled = true;
-      btn.innerHTML = '<span class="loading"></span> Resetting...';
-      
-      try {
-        const response = await fetch('https://detector-t406.onrender.com/api/mail/reset-password', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            token: resetToken,
-            newPassword: newPassword 
-          })
+    
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Function to check for reset token in URL
+        function checkResetToken() {
+            // Check for token in URL parameters
+            resetToken = getUrlParameter('token');
+            
+            if (resetToken) {
+                // Token found in URL, show reset password modal
+                console.log('Reset token found in URL');
+                showResetPasswordModal();
+                
+                // Optional: Remove token from URL for security (without page refresh)
+                const url = new URL(window.location);
+                url.searchParams.delete('token');
+                window.history.replaceState({}, document.title, url.pathname + url.search);
+            } else {
+                console.log('No reset token found in URL');
+            }
+        }
+
+        // Function to show reset password modal
+        function showResetPasswordModal() {
+            const modal = document.getElementById('resetPasswordModal');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+        }
+
+        // Function to close reset password modal
+        function closeResetPasswordModal() {
+            const modal = document.getElementById('resetPasswordModal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = 'auto'; // Restore scrolling
+            }
+            // Clear the token when modal is closed
+            resetToken = null;
+        }
+
+        // Function to close forgot password modal
+        function closeForgotPasswordModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Function to show success message
+        function showSuccess(message) {
+            // Add your success message display logic here
+            console.log('Success:', message);
+        }
+
+        // Function to check password strength
+        function checkPasswordStrength(password) {
+            // Add your password strength checking logic here
+            console.log('Checking password strength for:', password);
+        }
+
+        // Function to initialize Vanta (placeholder)
+        function initializeVanta() {
+            // Add your Vanta initialization code here
+            console.log('Initializing Vanta...');
+        }
+
+        // ===== YOUR EXISTING CODE (ENHANCED) =====
+        // Handle reset password form submission
+        document.getElementById('reset-password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const btn = document.getElementById('resetPasswordBtn');
+            const successMsg = document.getElementById('resetSuccessMessage');
+            const errorMsg = document.getElementById('resetErrorMessage');
+            
+            // Hide previous messages
+            successMsg.classList.remove('show');
+            errorMsg.classList.remove('show');
+            
+            // Validation
+            if (newPassword.length < 8) {
+                errorMsg.textContent = '❌ Password must be at least 8 characters long';
+                errorMsg.classList.add('show');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                errorMsg.textContent = '❌ Passwords do not match';
+                errorMsg.classList.add('show');
+                return;
+            }
+            
+            if (!resetToken) {
+                errorMsg.textContent = '❌ Invalid reset session. Please start over.';
+                errorMsg.classList.add('show');
+                return;
+            }
+            
+            // Disable button and show loading
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Resetting...';
+            
+            try {
+                const response = await fetch('https://detector-t406.onrender.com/api/mail/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        token: resetToken,
+                        newPassword: newPassword 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    successMsg.textContent = '✅ Password reset successfully!';
+                    successMsg.classList.add('show');
+                    btn.innerHTML = 'Password Reset Successfully!';
+                    
+                    // Redirect to login after 2 seconds
+                    setTimeout(() => {
+                        closeResetPasswordModal();
+                        showSuccess('Password reset successfully! You can now log in.');
+                    }, 2000);
+                } else {
+                    errorMsg.textContent = '❌ ' + (data.message || 'Failed to reset password');
+                    errorMsg.classList.add('show');
+                    btn.innerHTML = 'Reset Password';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Reset password error:', error);
+                errorMsg.textContent = '❌ Network error. Please try again.';
+                errorMsg.classList.add('show');
+                btn.innerHTML = 'Reset Password';
+                btn.disabled = false;
+            }
         });
 
-        const data = await response.json();
+        // Handle main login form
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Add your login logic here
+            console.log('Login form submitted');
+        });
 
-        if (response.ok && data.success) {
-          successMsg.classList.add('show');
-          btn.innerHTML = 'Password Reset Successfully!';
-          
-          // Redirect to login after 2 seconds
-          setTimeout(() => {
-            closeResetPasswordModal();
-            showSuccess('Password reset successfully! You can now log in.');
-          }, 2000);
-        } else {
-          errorMsg.textContent = '❌ ' + (data.message || 'Failed to reset password');
-          errorMsg.classList.add('show');
-          btn.innerHTML = 'Reset Password';
-          btn.disabled = false;
+        // Google Sign In function
+        function googleSignIn() {
+            // Add your Google Sign In logic here
+            console.log('Google Sign In clicked');
         }
-      } catch (error) {
-        console.error('Reset password error:', error);
-        errorMsg.textContent = '❌ Network error. Please try again.';
-        errorMsg.classList.add('show');
-        btn.innerHTML = 'Reset Password';
-        btn.disabled = false;
-      }
-    });
 
-    // Handle main login form
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      // Add your login logic here
-      console.log('Login form submitted');
-    });
-
-    // Google Sign In function
-    function googleSignIn() {
-      // Add your Google Sign In logic here
-      console.log('Google Sign In clicked');
-    }
-
-    // Password strength checking
-    const newPasswordInput = document.getElementById('newPassword');
-    if (newPasswordInput) {
-      newPasswordInput.addEventListener('input', function(e) {
-        checkPasswordStrength(e.target.value);
-      });
-    }
-
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        if (document.getElementById('forgotPasswordModal').classList.contains('show')) {
-          closeForgotPasswordModal();
+        // Password strength checking
+        const newPasswordInput = document.getElementById('newPassword');
+        if (newPasswordInput) {
+            newPasswordInput.addEventListener('input', function(e) {
+                checkPasswordStrength(e.target.value);
+            });
         }
-        if (document.getElementById('resetPasswordModal').classList.contains('show')) {
-          closeResetPasswordModal();
-        }
-      }
-    });
 
-    // Initialize everything when DOM is loaded
-    document.addEventListener("DOMContentLoaded", function() {
-      initializeVanta();
-      checkResetToken(); // Check if user came from email link
-      AOS.init(); // Initialize AOS animations
-    });
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (document.getElementById('forgotPasswordModal').classList.contains('show')) {
+                    closeForgotPasswordModal();
+                }
+                if (document.getElementById('resetPasswordModal').classList.contains('show')) {
+                    closeResetPasswordModal();
+                }
+            }
+        });
 
-    // Handle window resize
-    let resizeTimeout;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(initializeVanta, 300);
-    });
-  </script>
+        // Initialize everything when DOM is loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            initializeVanta();
+            checkResetToken(); // Check if user came from email link
+            if (typeof AOS !== 'undefined') {
+                AOS.init(); // Initialize AOS animations
+            }
+        });
+
+        // Handle window resize
+        let resizeTimeout;
+        window.addEventListener("resize", () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(initializeVanta, 300);
+        });
+    </script>
 </body>
 </html>
