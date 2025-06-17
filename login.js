@@ -68,7 +68,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
       localStorage.setItem('user', JSON.stringify(data.user));
       
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "detector.html";
       }, 1000);
     } else {
       // Handle error response
@@ -113,7 +113,7 @@ window.googleSignIn = async function googleSignIn() {
       localStorage.setItem('user', JSON.stringify(data.user));
       
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "detector.html";
       }, 1000);
     } else if (response.status === 404) {
       // User not found, try to sign up
@@ -156,7 +156,7 @@ async function googleSignUp(idToken) {
       localStorage.setItem('user', JSON.stringify(data.user));
       
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "detector.html";
       }, 1000);
     } else {
       showPopup(data.message || 'Google sign-up failed', 'error');
