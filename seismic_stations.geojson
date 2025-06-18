@@ -1,0 +1,2510 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.9265,
+          7.0192
+        ]
+      },
+      "properties": {
+        "station": "Campbell Bay",
+        "code": "CMBY",
+        "state_ut": "Andaman & Nicobar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.934,
+          13.17633333
+        ]
+      },
+      "properties": {
+        "station": "Diglipur",
+        "code": "DGPR",
+        "state_ut": "Andaman & Nicobar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.743936,
+          11.655773
+        ]
+      },
+      "properties": {
+        "station": "Port Blair",
+        "code": "PBA",
+        "state_ut": "Andaman & Nicobar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.5423,
+          8.0398
+        ]
+      },
+      "properties": {
+        "station": "Nan Cowry",
+        "code": "NCWR",
+        "state_ut": "Andaman & Nicobar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.8565,
+          12.5062
+        ]
+      },
+      "properties": {
+        "station": "Rangat",
+        "code": "RNGT",
+        "state_ut": "Andaman & Nicobar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.64608333,
+          16.51620278
+        ]
+      },
+      "properties": {
+        "station": "Vijayawada",
+        "code": "VJD",
+        "state_ut": "Andhra Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          83.329712,
+          17.7219
+        ]
+      },
+      "properties": {
+        "station": "Visakhapatnam",
+        "code": "VISK",
+        "state_ut": "Andhra Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.644129,
+          14.607033
+        ]
+      },
+      "properties": {
+        "station": "Anantapur",
+        "code": "ATP",
+        "state_ut": "Andhra Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.595489,
+          13.707954
+        ]
+      },
+      "properties": {
+        "station": "Tirupati",
+        "code": "TPTI",
+        "state_ut": "Andhra Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.036321,
+          15.761925
+        ]
+      },
+      "properties": {
+        "station": "Kurnool",
+        "code": "KNL",
+        "state_ut": "Andhra Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          81.873737,
+          17.063914
+        ]
+      },
+      "properties": {
+        "station": "Rajahmundry",
+        "code": "RAJM",
+        "state_ut": "Andhra Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.721983,
+          27.144666
+        ]
+      },
+      "properties": {
+        "station": "Itanagar",
+        "code": "ITAN",
+        "state_ut": "Arunachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          95.32603,
+          28.061633
+        ]
+      },
+      "properties": {
+        "station": "Pasighat",
+        "code": "PASG",
+        "state_ut": "Arunachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.866816,
+          27.593883
+        ]
+      },
+      "properties": {
+        "station": "Tawang",
+        "code": "TAWA",
+        "state_ut": "Arunachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.84908,
+          27.526663
+        ]
+      },
+      "properties": {
+        "station": "Ziro",
+        "code": "ZIRO",
+        "state_ut": "Arunachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.525198,
+          28.082118
+        ]
+      },
+      "properties": {
+        "station": "Hayuliang",
+        "code": "HAUL",
+        "state_ut": "Arunachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.89208,
+          28.993569
+        ]
+      },
+      "properties": {
+        "station": "Tuting",
+        "code": "TUTG",
+        "state_ut": "Arunachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.419714,
+          27.255699
+        ]
+      },
+      "properties": {
+        "station": "Bomdila",
+        "code": "BMDL",
+        "state_ut": "Arunachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.2231,
+          27.8992
+        ]
+      },
+      "properties": {
+        "station": "Daporijo",
+        "code": "DPJO",
+        "state_ut": "Arunachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.995597,
+          26.020213
+        ]
+      },
+      "properties": {
+        "station": "Dhubri",
+        "code": "DHUB",
+        "state_ut": "Assam"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.911197,
+          27.467733
+        ]
+      },
+      "properties": {
+        "station": "Dibrugarh",
+        "code": "DIBR",
+        "state_ut": "Assam"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.683888,
+          26.183611
+        ]
+      },
+      "properties": {
+        "station": "Guwahati",
+        "code": "GUWA",
+        "state_ut": "Assam"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.251266,
+          26.743113
+        ]
+      },
+      "properties": {
+        "station": "Jorhat",
+        "code": "JORH",
+        "state_ut": "Assam"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          95.846097,
+          27.333047
+        ]
+      },
+      "properties": {
+        "station": "Lekhapani",
+        "code": "LKP",
+        "state_ut": "Assam"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.802863,
+          24.7814
+        ]
+      },
+      "properties": {
+        "station": "Silchar",
+        "code": "SILR",
+        "state_ut": "Assam"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.8,
+          26.617
+        ]
+      },
+      "properties": {
+        "station": "Tezpur",
+        "code": "TEZP",
+        "state_ut": "Assam"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.2316,
+          24.8029
+        ]
+      },
+      "properties": {
+        "station": "Gaya",
+        "code": "\u00a0Gaya",
+        "state_ut": "Bihar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.22785278,
+          24.92883333
+        ]
+      },
+      "properties": {
+        "station": "Jamui",
+        "code": "\u00a0JMUI",
+        "state_ut": "Bihar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.45740278,
+          26.14874722
+        ]
+      },
+      "properties": {
+        "station": "Araria",
+        "code": "\u00a0ARIA",
+        "state_ut": "Bihar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.27366389,
+          26.75303611
+        ]
+      },
+      "properties": {
+        "station": "Sitamarhi",
+        "code": "\u00a0STMR",
+        "state_ut": "Bihar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          83.92326667,
+          27.44180278
+        ]
+      },
+      "properties": {
+        "station": "Valmiki Nagar",
+        "code": "VLK",
+        "state_ut": "Bihar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.304031,
+          26.382762
+        ]
+      },
+      "properties": {
+        "station": "Madhubani",
+        "code": "MABH",
+        "state_ut": "Bihar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.73092222,
+          30.74031944
+        ]
+      },
+      "properties": {
+        "station": "Chandigarh",
+        "code": "CGRH",
+        "state_ut": "Chandigarh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          82.17723333,
+          22.09786667
+        ]
+      },
+      "properties": {
+        "station": "Bilaspur",
+        "code": "BLSP",
+        "state_ut": "Chhattisgarh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          81.49915,
+          20.26741389
+        ]
+      },
+      "properties": {
+        "station": "Kanker",
+        "code": "KNKR",
+        "state_ut": "Chhattisgarh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          82.036634,
+          19.077681
+        ]
+      },
+      "properties": {
+        "station": "Jagdalpur",
+        "code": "JGDP",
+        "state_ut": "Chhattisgarh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          81.659075,
+          21.211605
+        ]
+      },
+      "properties": {
+        "station": "Raipur",
+        "code": "RAIP",
+        "state_ut": "Chhattisgarh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.12653333,
+          28.48229444
+        ]
+      },
+      "properties": {
+        "station": "Ayanagar",
+        "code": "AYAN",
+        "state_ut": "Delhi"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.22027222,
+          28.58966944
+        ]
+      },
+      "properties": {
+        "station": "Lodi Road, New Delhi",
+        "code": "LDR",
+        "state_ut": "Delhi"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.90400278,
+          28.570275
+        ]
+      },
+      "properties": {
+        "station": "Najafgarh (Ujwa) Delhi",
+        "code": "UJWA",
+        "state_ut": "Delhi"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.09538333,
+          28.78431944
+        ]
+      },
+      "properties": {
+        "station": "Narela Delhi",
+        "code": "NRLA",
+        "state_ut": "Delhi"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.21601667,
+          28.68526944
+        ]
+      },
+      "properties": {
+        "station": "Ridge, Delhi",
+        "code": "NDI",
+        "state_ut": "Delhi"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.28201667,
+          28.56183333
+        ]
+      },
+      "properties": {
+        "station": "Jamia University",
+        "code": "JMIU",
+        "state_ut": "Delhi"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.16926667,
+          28.63754444
+        ]
+      },
+      "properties": {
+        "station": "NPL Pusa New Delhi",
+        "code": "NPL",
+        "state_ut": "Delhi"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.825,
+          15.492
+        ]
+      },
+      "properties": {
+        "station": "Goa",
+        "code": "GOA",
+        "state_ut": "Goa"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.145525,
+          21.75023056
+        ]
+      },
+      "properties": {
+        "station": "Bhavnagar",
+        "code": "BHV",
+        "state_ut": "Gujarat"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          69.654,
+          23.25413333
+        ]
+      },
+      "properties": {
+        "station": "Bhuj",
+        "code": "BHUJ",
+        "state_ut": "Gujarat"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.754758,
+          21.144904
+        ]
+      },
+      "properties": {
+        "station": "Surat",
+        "code": "SRAT",
+        "state_ut": "Gujarat"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          70.357016,
+          20.907815
+        ]
+      },
+      "properties": {
+        "station": "Veraval",
+        "code": "VRVL",
+        "state_ut": "Gujarat"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.92637778,
+          28.6922
+        ]
+      },
+      "properties": {
+        "station": "Bahadurgarh",
+        "code": "BHGR",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.02693056,
+          29.13865278
+        ]
+      },
+      "properties": {
+        "station": "Ganaur",
+        "code": "GNR",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.64280833,
+          28.60955278
+        ]
+      },
+      "properties": {
+        "station": "Jhajjar",
+        "code": "JHJR",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.4892,
+          28.14426944
+        ]
+      },
+      "properties": {
+        "station": "Kundal",
+        "code": "KUDL",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.82080278,
+          29.96143056
+        ]
+      },
+      "properties": {
+        "station": "Kurukshetra",
+        "code": "KKR",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.33187222,
+          28.10758333
+        ]
+      },
+      "properties": {
+        "station": "Palwal",
+        "code": "PWAL",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.414,
+          29.033
+        ]
+      },
+      "properties": {
+        "station": "Rohtak",
+        "code": "RTK",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.06288056,
+          28.24498889
+        ]
+      },
+      "properties": {
+        "station": "Sohna",
+        "code": "SONA",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7753,
+          28.332135
+        ]
+      },
+      "properties": {
+        "station": "Pataudi",
+        "code": "\u00a0PTDI",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.31317,
+          28.414627
+        ]
+      },
+      "properties": {
+        "station": "Faridabad",
+        "code": "FBD",
+        "state_ut": "Haryana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.38098333,
+          31.39465556
+        ]
+      },
+      "properties": {
+        "station": "Bhakra",
+        "code": "BHK",
+        "state_ut": "Himachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.26,
+          31.546
+        ]
+      },
+      "properties": {
+        "station": "Kalpa",
+        "code": "KLP",
+        "state_ut": "Himachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.90558333,
+          31.530475
+        ]
+      },
+      "properties": {
+        "station": "Sundernagar",
+        "code": "SDNR",
+        "state_ut": "Himachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.150275,
+          32.83663056
+        ]
+      },
+      "properties": {
+        "station": "Tissa",
+        "code": "\u00a0TSSA",
+        "state_ut": "Himachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.30666667,
+          32.24761667
+        ]
+      },
+      "properties": {
+        "station": "Dharamshala",
+        "code": "DHRM",
+        "state_ut": "Himachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.167,
+          31.128
+        ]
+      },
+      "properties": {
+        "station": "Shimla",
+        "code": "SMLA",
+        "state_ut": "Himachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          75.955,
+          31.956
+        ]
+      },
+      "properties": {
+        "station": "Pong Dam(Talwara)",
+        "code": "TLWR",
+        "state_ut": "Himachal Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.83093333,
+          32.78108333
+        ]
+      },
+      "properties": {
+        "station": "Jammu",
+        "code": "JMU",
+        "state_ut": "Jammu & Kashmir"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.80465,
+          34.05081667
+        ]
+      },
+      "properties": {
+        "station": "Srinagar",
+        "code": "SRIN",
+        "state_ut": "Jammu & Kashmir"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          75.124455,
+          32.913517
+        ]
+      },
+      "properties": {
+        "station": "Udhampur",
+        "code": "UDMP",
+        "state_ut": "Jammu and Kashmir"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.88596667,
+          23.79473333
+        ]
+      },
+      "properties": {
+        "station": "Bokaro Thermal",
+        "code": "BOKR",
+        "state_ut": "Jharkhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.28541111,
+          23.05833056
+        ]
+      },
+      "properties": {
+        "station": "Khunti",
+        "code": "KNTI",
+        "state_ut": "Jharkhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.633275,
+          25.23271944
+        ]
+      },
+      "properties": {
+        "station": "Sahibganj",
+        "code": "SHBG",
+        "state_ut": "Jharkhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.86771111,
+          12.89230278
+        ]
+      },
+      "properties": {
+        "station": "Mangalore",
+        "code": "MNGI",
+        "state_ut": "Karnataka"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.57044,
+          13.021084
+        ]
+      },
+      "properties": {
+        "station": "Bangalore",
+        "code": "BANG",
+        "state_ut": "Karnataka"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.57438,
+          12.410009
+        ]
+      },
+      "properties": {
+        "station": "Mysore",
+        "code": "MYSR",
+        "state_ut": "Karnataka"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          75.908905,
+          12.485971
+        ]
+      },
+      "properties": {
+        "station": "Kodagu District",
+        "code": "KDGU",
+        "state_ut": "Karnataka"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.319389,
+          15.279572
+        ]
+      },
+      "properties": {
+        "station": "Bellary",
+        "code": "BLRY",
+        "state_ut": "Karnataka"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.534939,
+          15.262588
+        ]
+      },
+      "properties": {
+        "station": "Uttara Kannada",
+        "code": "SUPA",
+        "state_ut": "Karnataka"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.766297,
+          17.292241
+        ]
+      },
+      "properties": {
+        "station": "Kalaburgi",
+        "code": "KLBG",
+        "state_ut": "Karnataka"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.95836667,
+          8.508166667
+        ]
+      },
+      "properties": {
+        "station": "Thiruvananthapuram",
+        "code": "TRVM",
+        "state_ut": "Kerala"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.261974,
+          9.926534
+        ]
+      },
+      "properties": {
+        "station": "Kochi",
+        "code": "KOCH",
+        "state_ut": "Kerala"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.216627,
+          9.815074
+        ]
+      },
+      "properties": {
+        "station": "Chottupara, Idukki District",
+        "code": "CHT",
+        "state_ut": "Kerala"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.97303333,
+          32.77843889
+        ]
+      },
+      "properties": {
+        "station": "Hanley",
+        "code": "HNLY",
+        "state_ut": "Ladakh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.18443333,
+          34.2139
+        ]
+      },
+      "properties": {
+        "station": "Alchi (Leh)",
+        "code": "ALCI",
+        "state_ut": "Ladakh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.058799,
+          8.281516
+        ]
+      },
+      "properties": {
+        "station": "Minicoy",
+        "code": "MNC",
+        "state_ut": "Lakshadweep"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.1672,
+          22.7192
+        ]
+      },
+      "properties": {
+        "station": "Narmadanagar",
+        "code": "\u00a0NRDN",
+        "state_ut": "Madhya Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.33203333,
+          24.64929444
+        ]
+      },
+      "properties": {
+        "station": "Guna",
+        "code": "GUNA",
+        "state_ut": "Madhya Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.42426667,
+          23.2413
+        ]
+      },
+      "properties": {
+        "station": "Bhopal",
+        "code": "BHPL",
+        "state_ut": "Madhya Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.202201,
+          26.211028
+        ]
+      },
+      "properties": {
+        "station": "Gwalior",
+        "code": "GWAL",
+        "state_ut": "Madhya Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.944308,
+          23.196044
+        ]
+      },
+      "properties": {
+        "station": "Jabalpur",
+        "code": "JBPL",
+        "state_ut": "Madhya Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.935183,
+          22.050983
+        ]
+      },
+      "properties": {
+        "station": "Chhindwara",
+        "code": "CNWR",
+        "state_ut": "Madhya Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          75.920284,
+          22.532128
+        ]
+      },
+      "properties": {
+        "station": "Indore",
+        "code": "INDR",
+        "state_ut": "Madhya Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.7373,
+          22.2136
+        ]
+      },
+      "properties": {
+        "station": "Kanhiwada",
+        "code": "SEON",
+        "state_ut": "Madhya Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.01460833,
+          20.70165833
+        ]
+      },
+      "properties": {
+        "station": "Akola",
+        "code": "AKL",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.18354444,
+          17.30768611
+        ]
+      },
+      "properties": {
+        "station": "Karad",
+        "code": "KAD",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.53328611,
+          18.41041667
+        ]
+      },
+      "properties": {
+        "station": "Latur",
+        "code": "LATR",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.81266389,
+          18.89753333
+        ]
+      },
+      "properties": {
+        "station": "Mumbai",
+        "code": "BOM",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.05088611,
+          21.16989167
+        ]
+      },
+      "properties": {
+        "station": "Nagpur",
+        "code": "NGP",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.849,
+          18.53
+        ]
+      },
+      "properties": {
+        "station": "Pune",
+        "code": "POO",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          75.922909,
+          17.670282
+        ]
+      },
+      "properties": {
+        "station": "Solapur",
+        "code": "SLPR",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.094345,
+          19.654219
+        ]
+      },
+      "properties": {
+        "station": "Hingoli",
+        "code": "HING",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.7983,
+          20.0299
+        ]
+      },
+      "properties": {
+        "station": "Nashik",
+        "code": "NASK",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.913251,
+          20.034825
+        ]
+      },
+      "properties": {
+        "station": "Palghar",
+        "code": "PALG",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.7829,
+          17.3419
+        ]
+      },
+      "properties": {
+        "station": "Taliye",
+        "code": "TALI",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.7379,
+          17.3468
+        ]
+      },
+      "properties": {
+        "station": "Govare",
+        "code": "GOVA",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.7623,
+          17.2692
+        ]
+      },
+      "properties": {
+        "station": "Panderpani",
+        "code": "PDPN",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.6991,
+          17.3011
+        ]
+      },
+      "properties": {
+        "station": "Pathurpunj",
+        "code": "PATR",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.7686,
+          17.2898
+        ]
+      },
+      "properties": {
+        "station": "Atoli",
+        "code": "ATOL",
+        "state_ut": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.946613,
+          24.831216
+        ]
+      },
+      "properties": {
+        "station": "Imphal",
+        "code": "IMP",
+        "state_ut": "Manipur"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.224013,
+          25.516966
+        ]
+      },
+      "properties": {
+        "station": "Tura",
+        "code": "TURA",
+        "state_ut": "Meghalaya"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.85601,
+          25.566869
+        ]
+      },
+      "properties": {
+        "station": "Shillong",
+        "code": "SHL",
+        "state_ut": "Meghalaya"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.689666,
+          23.738513
+        ]
+      },
+      "properties": {
+        "station": "Aizawal",
+        "code": "AZL",
+        "state_ut": "Mizoram"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.987413,
+          22.48933
+        ]
+      },
+      "properties": {
+        "station": "Saiha",
+        "code": "SAIH",
+        "state_ut": "Mizoram"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.310253,
+          23.49512
+        ]
+      },
+      "properties": {
+        "station": "Champai",
+        "code": "CMPI",
+        "state_ut": "Mizoram"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.10808,
+          25.72038
+        ]
+      },
+      "properties": {
+        "station": "Kohima",
+        "code": "KOHI",
+        "state_ut": "Nagaland"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.515663,
+          26.321047
+        ]
+      },
+      "properties": {
+        "station": "Mokokchung",
+        "code": "MOKO",
+        "state_ut": "Nagaland"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.82053611,
+          20.25202222
+        ]
+      },
+      "properties": {
+        "station": "Bhubaneswar",
+        "code": "BWNR",
+        "state_ut": "Odisha"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          83.77311667,
+          21.76100556
+        ]
+      },
+      "properties": {
+        "station": "Jharsuguda",
+        "code": "JHSG",
+        "state_ut": "Odisha"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          83.4574,
+          19.247125
+        ]
+      },
+      "properties": {
+        "station": "Rayagada",
+        "code": "RAGD",
+        "state_ut": "Odisha"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          75.75754444,
+          32.44086667
+        ]
+      },
+      "properties": {
+        "station": "Thein Dam",
+        "code": "THN",
+        "state_ut": "Punjab"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.857019,
+          31.645877
+        ]
+      },
+      "properties": {
+        "station": "Amritsar",
+        "code": "AMRT",
+        "state_ut": "Punjab"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          70.90313333,
+          26.92443611
+        ]
+      },
+      "properties": {
+        "station": "Jaisalmer",
+        "code": "JASL",
+        "state_ut": "Rajasthan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.27705,
+          28.02062778
+        ]
+      },
+      "properties": {
+        "station": "Bikaner",
+        "code": "BKNR",
+        "state_ut": "Rajasthan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.88655,
+          29.92258333
+        ]
+      },
+      "properties": {
+        "station": "Sriganganagar",
+        "code": "SRGN",
+        "state_ut": "Rajasthan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.71303333,
+          24.58008333
+        ]
+      },
+      "properties": {
+        "station": "Udaipur",
+        "code": "\u00a0UDPR",
+        "state_ut": "Rajasthan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.62929167,
+          26.42424722
+        ]
+      },
+      "properties": {
+        "station": "Ajmer",
+        "code": "AJM",
+        "state_ut": "Rajasthan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          75.817812,
+          26.821156
+        ]
+      },
+      "properties": {
+        "station": "Jaipur",
+        "code": "JPR",
+        "state_ut": "Rajasthan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          74.959136,
+          28.283448
+        ]
+      },
+      "properties": {
+        "station": "Churu",
+        "code": "CHUR",
+        "state_ut": "Rajasthan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.040787,
+          26.256825
+        ]
+      },
+      "properties": {
+        "station": "Jodhpur",
+        "code": "JODH",
+        "state_ut": "Rajasthan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          71.412404,
+          25.75219
+        ]
+      },
+      "properties": {
+        "station": "Barmer",
+        "code": "BARM",
+        "state_ut": "Rajasthan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.60183,
+          27.31928
+        ]
+      },
+      "properties": {
+        "station": "Gangtok",
+        "code": "GTK",
+        "state_ut": "Sikkim"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.466725,
+          10.23178056
+        ]
+      },
+      "properties": {
+        "station": "Kodaikanal",
+        "code": "KOD",
+        "state_ut": "Tamil Nadu"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.18198333,
+          12.99001667
+        ]
+      },
+      "properties": {
+        "station": "Chennai",
+        "code": "MDRS",
+        "state_ut": "Tamil Nadu"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.15659167,
+          11.65613889
+        ]
+      },
+      "properties": {
+        "station": "Salem",
+        "code": "SALM",
+        "state_ut": "Tamilnadu"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.467222,
+          11.916944
+        ]
+      },
+      "properties": {
+        "station": "Villipuram",
+        "code": "VPRM",
+        "state_ut": "Tamilnadu"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.083888,
+          10.733611
+        ]
+      },
+      "properties": {
+        "station": "Thanjavur",
+        "code": "TNVR",
+        "state_ut": "Tamilnadu"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.8829,
+          11.0437
+        ]
+      },
+      "properties": {
+        "station": "Coimbtore",
+        "code": "CMBT",
+        "state_ut": "Tamilnadu"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.083888,
+          8.783611
+        ]
+      },
+      "properties": {
+        "station": "Thoothukudi",
+        "code": "TTKD",
+        "state_ut": "Tamilnadu"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.55185,
+          17.41858333
+        ]
+      },
+      "properties": {
+        "station": "Hyderabad",
+        "code": "HYB",
+        "state_ut": "Telangana"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.2463,
+          23.888933
+        ]
+      },
+      "properties": {
+        "station": "Agartala",
+        "code": "AGT",
+        "state_ut": "Tripura"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.447183,
+          23.248563
+        ]
+      },
+      "properties": {
+        "station": "Belonia",
+        "code": "BELO",
+        "state_ut": "Tripura"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          81.80835,
+          25.30911667
+        ]
+      },
+      "properties": {
+        "station": "Prayagraj",
+        "code": "ALBI",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.77238889,
+          28.75575
+        ]
+      },
+      "properties": {
+        "station": "Asaura",
+        "code": "ASOR",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          81.60398889,
+          27.56523056
+        ]
+      },
+      "properties": {
+        "station": "Bahraich",
+        "code": "BRCH",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.33088611,
+          25.48235
+        ]
+      },
+      "properties": {
+        "station": "Banda",
+        "code": "\u00a0BNDA",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          82.478975,
+          26.79063333
+        ]
+      },
+      "properties": {
+        "station": "Basti",
+        "code": "HRYA",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.4391,
+          28.57100833
+        ]
+      },
+      "properties": {
+        "station": "Bisrakh",
+        "code": "BISR",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.57339167,
+          27.39733333
+        ]
+      },
+      "properties": {
+        "station": "Farrukhabad",
+        "code": "FRKB",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          83.42991667,
+          26.73620556
+        ]
+      },
+      "properties": {
+        "station": "Gorakhpur",
+        "code": "GKPR",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.54,
+          25.466
+        ]
+      },
+      "properties": {
+        "station": "Jhansi",
+        "code": "JHNI",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.88328333,
+          26.77331667
+        ]
+      },
+      "properties": {
+        "station": "Lucknow",
+        "code": "LKN",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.73496111,
+          28.97415
+        ]
+      },
+      "properties": {
+        "station": "Meerut",
+        "code": "MERT",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.85510833,
+          29.14875833
+        ]
+      },
+      "properties": {
+        "station": "Thakurdwara",
+        "code": "TKRD",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.15965278,
+          29.48768611
+        ]
+      },
+      "properties": {
+        "station": "Unchagaon",
+        "code": "UNCH",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          82.99173333,
+          25.26804444
+        ]
+      },
+      "properties": {
+        "station": "Varanasi",
+        "code": "VAR",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.00716944,
+          27.13924167
+        ]
+      },
+      "properties": {
+        "station": "Agra",
+        "code": "AGRA",
+        "state_ut": "Uttar Pradesh"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.55799722,
+          30.55595
+        ]
+      },
+      "properties": {
+        "station": "Joshimath",
+        "code": "JOSI",
+        "state_ut": "Uttarakhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.08788333,
+          29.39904167
+        ]
+      },
+      "properties": {
+        "station": "Lohaghat",
+        "code": "LGTI",
+        "state_ut": "Uttarakhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.2041,
+          29.58554444
+        ]
+      },
+      "properties": {
+        "station": "Pithoragarh",
+        "code": "PTH",
+        "state_ut": "Uttarakhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.44497778,
+          30.73051111
+        ]
+      },
+      "properties": {
+        "station": "Uttarkashi",
+        "code": "\u00a0UTK",
+        "state_ut": "Uttarakhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.0541,
+          30.32243333
+        ]
+      },
+      "properties": {
+        "station": "Dehradun",
+        "code": "DDI",
+        "state_ut": "Uttarakhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.654279,
+          29.458247
+        ]
+      },
+      "properties": {
+        "station": "Mukteshwar, Nainital District",
+        "code": "MUKT",
+        "state_ut": "Uttarakhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          79.353953,
+          29.887593
+        ]
+      },
+      "properties": {
+        "station": "Chaukhutiya, Almora District",
+        "code": "CHAT",
+        "state_ut": "Uttarakhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.256639,
+          30.067249
+        ]
+      },
+      "properties": {
+        "station": "Munsiyari",
+        "code": "MUYR",
+        "state_ut": "Uttarakhand"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.46155278,
+          26.29406389
+        ]
+      },
+      "properties": {
+        "station": "Coochbehar",
+        "code": "\u00a0COBR",
+        "state_ut": "West Bengal"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.33097778,
+          22.53598889
+        ]
+      },
+      "properties": {
+        "station": "Kolkata",
+        "code": "CAL",
+        "state_ut": "West Bengal"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.71128611,
+          26.547325
+        ]
+      },
+      "properties": {
+        "station": "Jalpaiguri",
+        "code": "JPG",
+        "state_ut": "West Bengal"
+      }
+    }
+  ]
+}
