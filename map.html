@@ -15,11 +15,14 @@
     <meta name="screenshot" content="screenshot.jpg" />
 
     <!-- Add references to the Azure Maps Map control JavaScript and CSS files. -->
-    <link href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" rel="stylesheet" />
-    <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.js"></script>
-
+    <link href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" rel="stylesheet" />    <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.js"></script>
+    
     <!-- Add a reference to the Azure Maps Services Module JavaScript file. -->
     <script src="https://atlas.microsoft.com/sdk/javascript/service/2/atlas-service.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
     <script>
         var map, datasource, popup, searchInput, resultsPanel, searchInputLength, centerMapOnResults;
@@ -30,11 +33,21 @@
         // URL to your authentication service that retrieves an Microsoft Entra ID Token.
         var tokenServiceUrl = 'https://samples.azuremaps.com/api/GetAzureMapsToken';
 
-        // The minimum number of characters needed in the search input before a search is performed.
-        var minSearchInputLength = 3;
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwVMxhmCbm-jo6ExYj2m9hXLhexuDKk0U",
+            authDomain: "shakealert-908d0.firebaseapp.com",
+            databaseURL: "https://shakealert-908d0-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "shakealert-908d0",
+            storageBucket: "shakealert-908d0.firebasestorage.app",
+            messagingSenderId: "202678351500",
+            appId: "1:202678351500:web:f442a6f1354dba4b746da9",
+            measurementId: "G-L3M6X4QG2E",
+        };
 
-        // The number of ms between key strokes to wait before performing a search.
-        var keyStrokeDelay = 150;
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
         // Function to retrieve an Azure Maps access token.
         function getToken(resolve, reject, map) {
@@ -44,6 +57,80 @@
                 }
                 throw new Error('Failed to retrieve Azure Maps token.');
             }).then(token => resolve(token)).catch(error => reject(error));
+        }        // Function to load earthquake data from Firebase
+        function loadEarthquakeData() {
+            console.log('Starting to load earthquake data from Firebase...');
+            const shakesRef = database.ref('shakes');
+            
+            shakesRef.on('value', (snapshot) => {
+                console.log('Firebase data received:', snapshot.val());
+                const data = snapshot.val();
+                if (data) {
+                    // Clear existing data
+                    datasource.clear();
+                    console.log('Cleared existing datasource');
+                    
+                    // Calculate one week ago timestamp
+                    const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
+                    console.log('Filtering data from:', new Date(oneWeekAgo));
+                    
+                    // Convert Firebase data to GeoJSON format
+                    const earthquakeFeatures = [];
+                    let filteredCount = 0;
+                    let totalCount = 0;
+                    
+                    Object.keys(data).forEach(key => {
+                        const shake = data[key];
+                        totalCount++;
+                        
+                        // Check if earthquake is within the last week
+                        const earthquakeTime = shake.timestamp || 0;
+                        
+                        if (earthquakeTime >= oneWeekAgo) {
+                            console.log('Processing recent shake:', shake);
+                            
+                            // Extract coordinates from your Firebase structure
+                            const coordinates = shake.coordinates;
+                            if (coordinates && coordinates.lng && coordinates.lat) {
+                                earthquakeFeatures.push({
+                                    type: 'Feature',
+                                    geometry: {
+                                        type: 'Point',
+                                        coordinates: [coordinates.lng, coordinates.lat]
+                                    },
+                                    properties: {
+                                        mag: shake.intensity || shake.z || 1, // Use intensity or z as magnitude
+                                        place: shake.location || 'Unknown location',
+                                        time: shake.timestamp || Date.now(),
+                                        intensity: shake.intensity,
+                                        geohash: shake.geohash,
+                                        x: shake.x,
+                                        y: shake.y,
+                                        z: shake.z,
+                                        id: key
+                                    }
+                                });
+                                filteredCount++;
+                            }
+                        } else {
+                            console.log('Skipping old earthquake data:', new Date(earthquakeTime));
+                        }
+                    });
+                    
+                    // Add features to datasource
+                    if (earthquakeFeatures.length > 0) {
+                        console.log('Adding features to datasource:', earthquakeFeatures);
+                        datasource.add(earthquakeFeatures);
+                        console.log(`Loaded ${filteredCount} recent earthquake data points from Firebase (out of ${totalCount} total)`);
+                    } else {
+                        console.log(`No recent earthquake features found (filtered ${totalCount} old records)`);
+                    }
+                } else {
+                    console.log('No data found in Firebase');
+                }
+            }, (error) => {
+                console.error('Firebase error:', error);
+            });
         }
 
         function getMap() {
@@ -60,49 +147,64 @@
                     subscriptionKey: '9SVOQbxG2irBpV24jwuAmtDSxH6cD9XIeuaX6toUVkgjx8cZTnjKJQQJ99BFACYeBjFVq1wQAAAgAZMP31E0'
                 }
             });
-            map.events.add('ready', function (){
-            //Create a data source and add it to the map.
-            datasource = new atlas.source.DataSource();
-            map.sources.add(datasource);
-            //Load a data set of points, in this case earthquake data from the USGS.
-        fetch('seismic_stations.geojson')  // Or full URL if hosted elsewhere
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load GeoJSON file.');
-            return response.json();
-        })
-        .then(geojson => {
-            datasource.add(geojson);
-            //Create a heatmap and add it to the map.
-            map.layers.add(new atlas.layer.HeatMapLayer(datasource, null, {
-                weight: [
-                    'interpolate',
-                    ['exponential', 2], //Using an exponential interpolation since earthquake magnitudes are on an exponential scale.
-                    ['get', 'mag'],
-                    0, 0,
-                    6, 1    //Any earthquake above a magnitude of 6 will have a weight of 1
-                ],
-                radius: [
-                    'interpolate',
+            map.events.add('ready', function (){                map.controls.add(new atlas.control.StyleControl({
+                    //Optionally specify which map styles you want to appear in the picker. 
+                    //All styles available with the Gen1 S0 license tier appear by default in the control. 
+                    //If using a Gen1 S1 or Gen2 tier license, you can use the mapStyles option to add premium styles such as 'satellite' and 'satellite_road_labels' to the control.
+                    //To add all available styles, you can use the 'all' keyword.
+                    mapStyles: 'all'
+
+                    //Alternatively, specify an array of all the map styles you would like displayed in the style picker.
+                    //mapStyles: ['road', 'road_shaded_relief', 'grayscale_light', 'night', 'grayscale_dark', 'satellite', 'satellite_road_labels', 'high_contrast_dark']
+
+                    //Customize the layout of the style picker to be a list scrollable list.
+                    //,layout: 'list'
+                }), {
+                    position: 'top-left'
+                });
+                
+                //Create a data source and add it to the map.
+                datasource = new atlas.source.DataSource();
+                map.sources.add(datasource);
+                  //Create a heatmap and add it to the map.
+                map.layers.add(new atlas.layer.HeatMapLayer(datasource, null, {
+                    weight: [
+                        'interpolate',
+                        ['linear'], // Changed from exponential to linear for better intensity mapping
+                        ['get', 'mag'], // This gets the intensity value from Firebase data
+                        0, 0,
+                        5, 0.2,
+                        10, 0.5,
+                        15, 0.8,
+                        20, 1    // Maximum intensity of 20 gets full weight
+                    ],
+                    radius: [
+                        'interpolate',
                         ['linear'],
                         ['zoom'],
-                        0, 2,
-                        22, 200
+                        0, 5,
+                        10, 50,
+                        22, 300
                     ],
                     color: [
                         'interpolate',
                         ['linear'],
                         ['heatmap-density'],
-                        0, 'rgba(33,102,172,0)',
-                        0.2, 'rgb(103,169,207)',
-                        0.4, 'rgb(209,229,240)',
-                        0.6, 'rgb(253,219,199)',
-                        0.8, 'rgb(239,138,98)',
-                        1, 'rgb(178,24,43)'
-                    ]
+                        0, 'rgba(0,0,255,0)',        // Transparent blue for no intensity
+                        0.1, 'rgb(0,100,255)',       // Light blue for low intensity
+                        0.3, 'rgb(0,255,255)',       // Cyan for mild intensity
+                        0.5, 'rgb(0,255,0)',         // Green for medium intensity
+                        0.7, 'rgb(255,255,0)',       // Yellow for high intensity
+                        0.85, 'rgb(255,165,0)',      // Orange for very high intensity
+                        1, 'rgb(255,0,0)'            // Red for maximum intensity
+                    ],
+                    opacity: 0.8  // Make heatmap slightly transparent
                 }), 'labels');
+                
+                // Load earthquake data from Firebase
+                loadEarthquakeData();
             });
-        });
-    }
+        }
     
     </script>
     <style>
@@ -137,21 +239,47 @@
 
 <body onload="getMap()">
     <div id="myMap"></div>
-    <div id="mapControls" style="position: absolute; top: 20px; right: 20px; z-index: 1000; background-color: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-        <button id="zoomIn" style="width: 30px; height: 30px; margin-bottom: 5px; font-size: 18px; cursor: pointer;">+</button>
+      <div id="mapControls" style="position: absolute; top: 20px; right: 20px; z-index: 1000; background-color: white; padding: 10px; border-radius: 5px;">
+        <button id="zoomIn" style="width: 30px; height: 30px; margin-bottom: 3px; font-size: 18px; cursor: pointer;">+</button>
         <button id="zoomOut" style="width: 30px; height: 30px; font-size: 18px; cursor: pointer;">-</button>
-    </div>
-
-    <script>
+    </div>    <!-- Intensity Legend -->
+    <div id="intensityLegend" style="position: absolute; bottom: 20px; left: 20px; z-index: 1000; background-color: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+        <h4 style="margin: 0 0 10px 0; font-size: 14px;">Earthquake Intensity (Last 7 Days)</h4>
+        <div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 15px; background: rgb(0,100,255); border-radius: 2px;"></div>
+                <span>Low (0-5)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 15px; background: rgb(0,255,255); border-radius: 2px;"></div>
+                <span>Mild (5-10)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 15px; background: rgb(0,255,0); border-radius: 2px;"></div>
+                <span>Medium (10-15)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 15px; background: rgb(255,255,0); border-radius: 2px;"></div>
+                <span>High (15-18)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 15px; background: rgb(255,165,0); border-radius: 2px;"></div>
+                <span>Very High (18-20)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 15px; background: rgb(255,0,0); border-radius: 2px;"></div>
+                <span>Extreme (20+)</span>
+            </div>
+        </div>
+    </div><script>
         document.getElementById('zoomIn').addEventListener('click', function() {
             map.setCamera({
-                zoom: map.getCamera().zoom + 1
+                zoom: map.getCamera().zoom + 0.7
             });
         });
-        
-        document.getElementById('zoomOut').addEventListener('click', function() {
+          document.getElementById('zoomOut').addEventListener('click', function() {
             map.setCamera({
-                zoom: map.getCamera().zoom - 1
+                zoom: map.getCamera().zoom - 0.7
             });
         });
     </script>
