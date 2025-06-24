@@ -10,6 +10,14 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css';" />
 
+  <!-- Azure Maps CSS -->
+  <link href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" rel="stylesheet" />
+
+  <!-- Add Google Fonts for modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     * {
       margin: 0;
@@ -19,7 +27,7 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #1e293b 0%, #334155 25%, #475569 50%, #1e1b4b 75%, #0f172a 100%);
       color: white;
       min-height: 100vh;
       padding: 20px;
@@ -96,55 +104,92 @@
     .mock-btn,
     .location-btn,
     .emergency-btn {
-      padding: 15px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      padding: 1.3em 3em;
+      font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 3px;
+      border: none;
+      border-radius: 45px;
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease 0s;
+      cursor: pointer;
+      outline: none;
       position: relative;
       overflow: hidden;
     }
 
     .test-btn {
-      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-      color: white;
+      color: #000;
+      background-color: #ff6b9d;
+      box-shadow: 0px 8px 15px rgba(255, 107, 157, 0.2);
+    }
+
+    .test-btn:hover {
+      background-color: #e91e63;
+      box-shadow: 0px 15px 20px rgba(233, 30, 99, 0.4);
+      color: #fff;
+      transform: translateY(-7px);
+    }
+
+    .test-btn:active {
+      transform: translateY(-1px);
     }
 
     .mock-btn {
-      background: linear-gradient(45deg, #4ecdc4, #44a08d);
-      color: white;
+      color: #000;
+      background-color: #60a5fa;
+      box-shadow: 0px 8px 15px rgba(96, 165, 250, 0.2);
+    }
+
+    .mock-btn:hover {
+      background-color: #3b82f6;
+      box-shadow: 0px 15px 20px rgba(59, 130, 246, 0.4);
+      color: #fff;
+      transform: translateY(-7px);
+    }
+
+    .mock-btn:active {
+      transform: translateY(-1px);
     }
 
     .location-btn {
-      background: linear-gradient(45deg, #a8edea, #fed6e3);
-      color: #333;
+      color: #000;
+      background-color: #4ade80;
+      box-shadow: 0px 8px 15px rgba(74, 222, 128, 0.2);
+    }
+
+    .location-btn:hover {
+      background-color: #22c55e;
+      box-shadow: 0px 15px 20px rgba(34, 197, 94, 0.4);
+      color: #fff;
+      transform: translateY(-7px);
+    }
+
+    .location-btn:active {
+      transform: translateY(-1px);
     }
 
     .emergency-btn {
-      background: linear-gradient(45deg, #ff9800, #f57c00);
-      color: white;
+      color: #000;
+      background-color: #f87171;
+      box-shadow: 0px 8px 15px rgba(248, 113, 113, 0.2);
     }
 
-    .test-btn:hover,
-    .mock-btn:hover,
-    .location-btn:hover,
     .emergency-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      background-color: #ef4444;
+      box-shadow: 0px 15px 20px rgba(239, 68, 68, 0.4);
+      color: #fff;
+      transform: translateY(-7px);
     }
 
-    .test-btn:active,
-    .mock-btn:active,
-    .location-btn:active,
     .emergency-btn:active {
-      transform: translateY(0);
+      transform: translateY(-1px);
     }
 
     /* Map Styles */
-    #map {
+    #map, #myMap {
       height: 500px !important;
       width: 100% !important;
       min-height: 400px;
@@ -155,6 +200,12 @@
       position: relative;
       z-index: 1;
       background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    #map:hover, #myMap:hover {
+      box-shadow: 0 12px 30px rgba(31, 38, 135, 0.5);
+      transform: translateY(-2px);
     }
 
     .leaflet-container {
@@ -164,9 +215,21 @@
 
     .map-title {
       text-align: center;
-      margin: 20px 0 10px 0;
+      margin: 30px 0 15px 0;
       font-size: 1.5rem;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map-title::before, .map-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.5), transparent);
+      margin: 0 15px;
     }
 
     /* Wave Simulation Panel */
@@ -175,8 +238,14 @@
       backdrop-filter: blur(10px);
       border-radius: 15px;
       padding: 25px;
-      margin: 20px 0;
+      margin: 30px 0;
       border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .wave-simulation:hover {
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      transform: translateY(-2px);
     }
 
     .wave-simulation h3 {
@@ -265,7 +334,20 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 15px;
       padding: 20px;
-      margin-top: 20px;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .system-status:hover {
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      transform: translateY(-2px);
+    }
+
+    .system-status h3 {
+      color: #4ecdc4;
+      margin-bottom: 15px;
+      text-align: center;
     }
 
     .status-grid {
@@ -281,6 +363,12 @@
       border-radius: 10px;
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .status-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
     .status-card.online {
@@ -298,70 +386,151 @@
       margin-bottom: 10px;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px;
-        margin: 10px;
-      }
-
-      h1 {
-        font-size: 2rem;
-      }
-
-      .controls {
-        grid-template-columns: 1fr;
-      }
-
-      .alert-panel {
-        width: 90%;
-        right: 5%;
-        left: 5%;
-      }
-
-      .simulation-controls {
-        grid-template-columns: 1fr;
-      }
-
-      #map {
-        height: 400px !important;
-      }
-    }
-
-    /* Fallback Map Styles */
-    .map-fallback {
-      height: 500px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      flex-direction: column;
-      text-align: center;
-      padding: 50px;
-      border: 2px dashed rgba(255, 255, 255, 0.3);
-    }
-
-    .map-fallback h3 {
-      margin-bottom: 15px;
-      color: #4ecdc4;
-    }
-
-    .map-fallback button {
-      background: #4ecdc4;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 15px;
-      font-weight: bold;
+    /* Map Controls */
+    .map-controls-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       transition: all 0.3s ease;
     }
 
-    .map-fallback button:hover {
-      background: #45b7aa;
-      transform: translateY(-2px);
+    .map-controls-container:hover {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .map-btn {
+      width: 45px;
+      height: 45px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #fff;
+      color: #333;
+      border: none;
+      border-radius: 50%;
+      margin-bottom: 8px;
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.3s ease 0s;
+      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      outline: none;
+    }
+
+    /* Map Legend */
+    .map-legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      max-width: 220px;
+      transition: all 0.3s ease;
+    }
+
+    .map-legend:hover {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .map-legend h4 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .color-box {
+      width: 20px;
+      height: 15px;
+      border-radius: 3px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .legend-text {
+      font-size: 12px;
+      color: white;
+      text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    }
+    
+    /* Custom Azure Map Style Control - Clean horizontal layout */
+    .atlas-map-style-picker {
+      background: rgba(255, 255, 255, 0.15) !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+      padding: 8px !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    .atlas-map-style-picker:hover {
+      background: rgba(255, 255, 255, 0.25) !important;
+    }
+    
+    .atlas-map-style-picker-list {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: wrap !important;
+      gap: 6px !important;
+    }
+    
+    .atlas-map-style-picker-button {
+      border-radius: 6px !important;
+      margin: 0 !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      overflow: hidden !important;
+      transition: all 0.2s ease !important;
+      width: 60px !important;
+      height: 60px !important;
+    }
+    
+    .atlas-map-style-picker-button:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .atlas-map-style-picker-button-selected {
+      box-shadow: 0 0 0 2px #4ecdc4 !important;
+      background-color: rgba(78, 205, 196, 0.2) !important;
+    }
+    
+    .atlas-map-style-picker-button img {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 4px !important;
+    }
+
+    /* Make the style control responsive */
+    @media (max-width: 768px) {
+      .atlas-map-style-picker {
+        max-width: calc(100% - 40px) !important;
+      }
+      
+      .atlas-map-style-picker-button {
+        width: 50px !important;
+        height: 50px !important;
+      }
     }
   </style>
 </head>
@@ -375,7 +544,6 @@
     </div>
 
     <div class="controls">
-
       <button onclick="testLocation()" class="location-btn">
         📍 Test Location
       </button>
@@ -388,15 +556,50 @@
       <button onclick="emergencyMode()" class="emergency-btn">
         🆘 Emergency Mode
       </button>
-      <!-- Add this button in your controls section -->
       <button onclick="testLocationDetailed()" class="location-btn">
         🔍 Test Real GPS Location
       </button>
-
     </div>
 
     <div class="map-title">🌍 Real-Time Earthquake Monitoring Map</div>
     <div id="map"></div>
+
+    <!-- Azure Maps Heatmap Section -->
+    <div class="map-title">🔥 Earthquake Intensity Heatmap (Last 7 Days)</div>
+    <div style="position: relative;">
+      <div id="myMap"></div>
+      <div class="map-controls-container">
+        <button id="zoomIn" class="map-btn">+</button>
+        <button id="zoomOut" class="map-btn">-</button>
+      </div>
+      <div class="map-legend">
+        <h4>Earthquake Intensity Levels</h4>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(0,100,255);"></div>
+          <span class="legend-text">Low (0-5)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(0,255,255);"></div>
+          <span class="legend-text">Mild (5-10)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(0,255,0);"></div>
+          <span class="legend-text">Medium (10-15)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(255,255,0);"></div>
+          <span class="legend-text">High (15-18)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(255,165,0);"></div>
+          <span class="legend-text">Very High (18-20)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(255,0,0);"></div>
+          <span class="legend-text">Extreme (20+)</span>
+        </div>
+      </div>
+    </div>
 
     <div class="wave-simulation">
       <h3>🌊 Seismic Wave Propagation Simulation</h3>
@@ -435,6 +638,231 @@
 
   <!-- Firebase JavaScript -->
   <script type="module" src="detector.js"></script>
+
+  <!-- Azure Maps JavaScript -->
+  <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.js"></script>
+  <script src="https://atlas.microsoft.com/sdk/javascript/service/2/atlas-service.min.js"></script>
+
+  <!-- Firebase SDK for Azure Maps -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <!-- Azure Maps Initialization -->
+  <script>
+    // Initialize the Azure Map after DOM loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Variables for the map
+      var azureMap, datasource;
+      
+      // Firebase configuration for Azure Map
+      const firebaseConfig = {
+        apiKey: "AIzaSyBwVMxhmCbm-jo6ExYj2m9hXLhexuDKk0U",
+        authDomain: "shakealert-908d0.firebaseapp.com",
+        databaseURL: "https://shakealert-908d0-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "shakealert-908d0",
+        storageBucket: "shakealert-908d0.appspot.com",
+        messagingSenderId: "202678351500",
+        appId: "1:202678351500:web:f442a6f1354dba4b746da9",
+        measurementId: "G-L3M6X4QG2E"
+      };
+      
+      // We'll use a separate Firebase instance for the Azure Map to avoid conflicts
+      const azureFirebase = firebase.initializeApp(firebaseConfig, "azure-map-instance");
+      const database = azureFirebase.database();
+
+      // Function to load earthquake data from Firebase
+      function loadEarthquakeData() {
+        const shakesRef = database.ref('shakes');
+        shakesRef.on('value', (snapshot) => {
+          const data = snapshot.val();
+          if (datasource) datasource.clear();
+          if (data) {
+            const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+            const features = [];
+            
+            // Show loading indicator in status
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = '<div class="loading"></div> Loading earthquake data...';
+            
+            Object.keys(data).forEach(key => {
+              const shake = data[key];
+              const time = shake.timestamp || 0;
+              if (time >= oneWeekAgo) {
+                const coordinates = shake.coordinates;
+                if (coordinates && coordinates.lng && coordinates.lat) {
+                  features.push({
+                    type: 'Feature',
+                    geometry: { type: 'Point', coordinates: [coordinates.lng, coordinates.lat] },
+                    properties: {
+                      mag: shake.intensity || shake.z || 1,
+                      place: shake.location || 'Unknown location',
+                      time: shake.timestamp || Date.now(),
+                      intensity: shake.intensity,
+                      geohash: shake.geohash,
+                      x: shake.x, y: shake.y, z: shake.z,
+                      id: key
+                    }
+                  });
+                }
+              }
+            });
+            
+            if (features.length > 0 && datasource) {
+              datasource.add(features);
+              
+              // Update status with success message
+              statusEl.innerHTML = `✅ Loaded ${features.length} earthquakes from the last 7 days`;
+              statusEl.className = 'status status-success';
+              
+              // Auto-hide success message after 5 seconds
+              setTimeout(() => {
+                statusEl.innerHTML = '🔄 ShakeAlert system active and monitoring';
+                statusEl.className = 'status';
+              }, 5000);
+            } else {
+              // Update status for no data
+              statusEl.innerHTML = 'ℹ️ No recent earthquake data available';
+              statusEl.className = 'status status-warning';
+            }
+          }
+        });
+      }
+
+      // Initialize Azure Map
+      function initAzureMap() {
+        azureMap = new atlas.Map('myMap', {
+          center: [80.0, 22.0],
+          zoom: 3.9,
+          view: 'Auto',
+          style: 'night', // Starting with night style for better visualization
+          authOptions: {
+            authType: 'subscriptionKey',
+            subscriptionKey: '9SVOQbxG2irBpV24jwuAmtDSxH6cD9XIeuaX6toUVkgjx8cZTnjKJQQJ99BFACYeBjFVq1wQAAAgAZMP31E0'
+          }
+        });
+        
+        azureMap.events.add('ready', function() {
+          // Add clean style control like the example
+          azureMap.controls.add(new atlas.control.StyleControl({
+            mapStyles: 'all'
+          }), {
+            position: 'top-left'
+          });
+          
+          // Apply enhanced styling after control is added
+          setTimeout(() => {
+            const stylePicker = document.querySelector('.atlas-map-style-picker');
+            if (stylePicker) {
+              // Style the button list for horizontal layout
+              const listContainer = stylePicker.querySelector('.atlas-map-style-picker-list');
+              if (listContainer) {
+                listContainer.style.display = 'flex';
+                listContainer.style.flexDirection = 'row';
+                listContainer.style.flexWrap = 'wrap';
+                listContainer.style.gap = '6px';
+              }
+              
+              // Add hover effects to buttons
+              const buttons = stylePicker.querySelectorAll('.atlas-map-style-picker-button');
+              buttons.forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                  if (!button.classList.contains('atlas-map-style-picker-button-selected')) {
+                    button.style.transform = 'translateY(-2px)';
+                    button.style.boxShadow = '0 3px 10px rgba(0,0,0,0.2)';
+                  }
+                });
+                
+                button.addEventListener('mouseleave', () => {
+                  if (!button.classList.contains('atlas-map-style-picker-button-selected')) {
+                    button.style.transform = 'none';
+                    button.style.boxShadow = 'none';
+                  }
+                });
+              });
+            }
+          }, 300);
+          
+          // Create data source and add to map
+          datasource = new atlas.source.DataSource();
+          azureMap.sources.add(datasource);
+          
+          // Create heat map layer with enhanced visualization
+          azureMap.layers.add(new atlas.layer.HeatMapLayer(datasource, null, {
+            weight: [
+              'interpolate', ['linear'], ['get', 'mag'],
+              0, 0, 
+              5, 0.2, 
+              10, 0.5, 
+              15, 0.8, 
+              20, 1
+            ],
+            radius: [
+              'interpolate', ['linear'], ['zoom'],
+              0, 5, 
+              5, 25, 
+              10, 50, 
+              15, 150,
+              22, 300
+            ],
+            color: [
+              'interpolate', ['linear'], ['heatmap-density'],
+              0, 'rgba(0,0,255,0)',
+              0.1, 'rgb(0,100,255)',
+              0.3, 'rgb(0,255,255)',
+              0.5, 'rgb(0,255,0)',
+              0.7, 'rgb(255,255,0)',
+              0.85, 'rgb(255,165,0)',
+              1, 'rgb(255,0,0)'
+            ],
+            opacity: 0.8
+          }), 'labels');
+          
+          // Add a popup for when users click on the map
+          const popup = new atlas.Popup({
+            pixelOffset: [0, -30],
+            closeButton: true
+          });
+          
+          // Add a click event to the map
+          azureMap.events.add('click', function(e) {
+            const features = azureMap.layers.getRenderedShapes(e.position, 'HeatMapLayer');
+            if (features.length > 0) {
+              popup.setOptions({
+                content: `<div style="padding:10px;"><strong>Location:</strong> ${e.position[1].toFixed(4)}, ${e.position[0].toFixed(4)}<br>
+                          <strong>Intensity Level:</strong> High activity area<br>
+                          <strong>Last Updated:</strong> ${new Date().toLocaleString()}</div>`,
+                position: e.position
+              });
+              popup.open(azureMap);
+            }
+          });
+          
+          // Load earthquake data
+          loadEarthquakeData();
+        });
+
+        // Setup interactive zoom controls
+        document.getElementById('zoomIn').addEventListener('click', function() {
+          azureMap.setCamera({
+            zoom: azureMap.getCamera().zoom + 0.7,
+            type: 'ease',
+            duration: 300
+          });
+        });
+        
+        document.getElementById('zoomOut').addEventListener('click', function() {
+          azureMap.setCamera({
+            zoom: azureMap.getCamera().zoom - 0.7,
+            type: 'ease',
+            duration: 300
+          });
+        });
+      }
+      
+      // Initialize the map
+      initAzureMap();
+    });
+  </script>
 </body>
 
 </html>
