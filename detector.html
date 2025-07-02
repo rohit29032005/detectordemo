@@ -10,208 +10,13 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css';" />
 
-    <link rel="shortcut icon" href="/favicon.ico" />
+  <!-- Azure Maps CSS -->
+  <link href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" rel="stylesheet" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="This tutorial shows how to create an interactive search experience." />
-    <meta name="keywords" content="Microsoft maps, map, gis, API, SDK, services, module, tutorials, search, point of interest, POI" />
-    <meta name="author" content="Microsoft Azure Maps" />
-    <meta name="version" content="1.0" />
-    <meta name="screenshot" content="screenshot.jpg" />
-
-    <!-- Add references to the Azure Maps Map control JavaScript and CSS files. -->
-    <link href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" rel="stylesheet" />    <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.js"></script>
-    
-    <!-- Add a reference to the Azure Maps Services Module JavaScript file. -->
-    <script src="https://atlas.microsoft.com/sdk/javascript/service/2/atlas-service.min.js"></script>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
-    <script>
-        var map, datasource, popup, searchInput, resultsPanel, searchInputLength, centerMapOnResults;
-
-        // Your Azure Maps client id for accessing your Azure Maps account.
-        var azureMapsClientId = 'ff804c95-effb-4dc4-9466-bbb25be9bd2c';
-
-        // URL to your authentication service that retrieves an Microsoft Entra ID Token.
-        var tokenServiceUrl = 'https://samples.azuremaps.com/api/GetAzureMapsToken';
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBwVMxhmCbm-jo6ExYj2m9hXLhexuDKk0U",
-            authDomain: "shakealert-908d0.firebaseapp.com",
-            databaseURL: "https://shakealert-908d0-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "shakealert-908d0",
-            storageBucket: "shakealert-908d0.firebasestorage.app",
-            messagingSenderId: "202678351500",
-            appId: "1:202678351500:web:f442a6f1354dba4b746da9",
-            measurementId: "G-L3M6X4QG2E",
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // Function to retrieve an Azure Maps access token.
-        function getToken(resolve, reject, map) {
-            fetch(tokenServiceUrl).then(response => {
-                if (response.ok) {
-                    return response.text();
-                }
-                throw new Error('Failed to retrieve Azure Maps token.');
-            }).then(token => resolve(token)).catch(error => reject(error));
-        }        // Function to load earthquake data from Firebase
-        function loadEarthquakeData() {
-            console.log('Starting to load earthquake data from Firebase...');
-            const shakesRef = database.ref('shakes');
-            
-            shakesRef.on('value', (snapshot) => {
-                console.log('Firebase data received:', snapshot.val());
-                const data = snapshot.val();
-                if (data) {
-                    // Clear existing data
-                    datasource.clear();
-                    console.log('Cleared existing datasource');
-                    
-                    // Calculate one week ago timestamp
-                    const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
-                    console.log('Filtering data from:', new Date(oneWeekAgo));
-                    
-                    // Convert Firebase data to GeoJSON format
-                    const earthquakeFeatures = [];
-                    let filteredCount = 0;
-                    let totalCount = 0;
-                    
-                    Object.keys(data).forEach(key => {
-                        const shake = data[key];
-                        totalCount++;
-                        
-                        // Check if earthquake is within the last week
-                        const earthquakeTime = shake.timestamp || 0;
-                        
-                        if (earthquakeTime >= oneWeekAgo) {
-                            console.log('Processing recent shake:', shake);
-                            
-                            // Extract coordinates from your Firebase structure
-                            const coordinates = shake.coordinates;
-                            if (coordinates && coordinates.lng && coordinates.lat) {
-                                earthquakeFeatures.push({
-                                    type: 'Feature',
-                                    geometry: {
-                                        type: 'Point',
-                                        coordinates: [coordinates.lng, coordinates.lat]
-                                    },
-                                    properties: {
-                                        mag: shake.intensity || shake.z || 1, // Use intensity or z as magnitude
-                                        place: shake.location || 'Unknown location',
-                                        time: shake.timestamp || Date.now(),
-                                        intensity: shake.intensity,
-                                        geohash: shake.geohash,
-                                        x: shake.x,
-                                        y: shake.y,
-                                        z: shake.z,
-                                        id: key
-                                    }
-                                });
-                                filteredCount++;
-                            }
-                        } else {
-                            console.log('Skipping old earthquake data:', new Date(earthquakeTime));
-                        }
-                    });
-                    
-                    // Add features to datasource
-                    if (earthquakeFeatures.length > 0) {
-                        console.log('Adding features to datasource:', earthquakeFeatures);
-                        datasource.add(earthquakeFeatures);
-                        console.log(`Loaded ${filteredCount} recent earthquake data points from Firebase (out of ${totalCount} total)`);
-                    } else {
-                        console.log(`No recent earthquake features found (filtered ${totalCount} old records)`);
-                    }
-                } else {
-                    console.log('No data found in Firebase');
-                }
-            }, (error) => {
-                console.error('Firebase error:', error);
-            });
-        }
-
-        function getMap() {
-            // Initialize a map instance.
-            map = new atlas.Map('myMap', {
-                center: [80.0, 22.0],
-                zoom: 5,
-                view: 'Auto',
-    
-                // Add authentication details for connecting to Azure Maps.
-                authOptions: {
-                    // Use Azure Maps subscription key authentication
-                    authType: 'subscriptionKey',
-                    subscriptionKey: '9SVOQbxG2irBpV24jwuAmtDSxH6cD9XIeuaX6toUVkgjx8cZTnjKJQQJ99BFACYeBjFVq1wQAAAgAZMP31E0'
-                }
-            });
-            map.events.add('ready', function (){                map.controls.add(new atlas.control.StyleControl({
-                    //Optionally specify which map styles you want to appear in the picker. 
-                    //All styles available with the Gen1 S0 license tier appear by default in the control. 
-                    //If using a Gen1 S1 or Gen2 tier license, you can use the mapStyles option to add premium styles such as 'satellite' and 'satellite_road_labels' to the control.
-                    //To add all available styles, you can use the 'all' keyword.
-                    mapStyles: 'all'
-
-                    //Alternatively, specify an array of all the map styles you would like displayed in the style picker.
-                    //mapStyles: ['road', 'road_shaded_relief', 'grayscale_light', 'night', 'grayscale_dark', 'satellite', 'satellite_road_labels', 'high_contrast_dark']
-
-                    //Customize the layout of the style picker to be a list scrollable list.
-                    //,layout: 'list'
-                }), {
-                    position: 'top-left'
-                });
-                
-                //Create a data source and add it to the map.
-                datasource = new atlas.source.DataSource();
-                map.sources.add(datasource);
-                  //Create a heatmap and add it to the map.
-                map.layers.add(new atlas.layer.HeatMapLayer(datasource, null, {
-                    weight: [
-                        'interpolate',
-                        ['linear'], // Changed from exponential to linear for better intensity mapping
-                        ['get', 'mag'], // This gets the intensity value from Firebase data
-                        0, 0,
-                        5, 0.2,
-                        10, 0.5,
-                        15, 0.8,
-                        20, 1    // Maximum intensity of 20 gets full weight
-                    ],
-                    radius: [
-                        'interpolate',
-                        ['linear'],
-                        ['zoom'],
-                        0, 5,
-                        10, 50,
-                        22, 300
-                    ],
-                    color: [
-                        'interpolate',
-                        ['linear'],
-                        ['heatmap-density'],
-                        0, 'rgba(0,0,255,0)',        // Transparent blue for no intensity
-                        0.1, 'rgb(0,100,255)',       // Light blue for low intensity
-                        0.3, 'rgb(0,255,255)',       // Cyan for mild intensity
-                        0.5, 'rgb(0,255,0)',         // Green for medium intensity
-                        0.7, 'rgb(255,255,0)',       // Yellow for high intensity
-                        0.85, 'rgb(255,165,0)',      // Orange for very high intensity
-                        1, 'rgb(255,0,0)'            // Red for maximum intensity
-                    ],
-                    opacity: 0.8  // Make heatmap slightly transparent
-                }), 'labels');
-                
-                // Load earthquake data from Firebase
-                loadEarthquakeData();
-            });
-        }
-    
-    </script>
+  <!-- Add Google Fonts for modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -222,14 +27,11 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #1e293b 0%, #334155 25%, #475569 50%, #1e1b4b 75%, #0f172a 100%);
       color: white;
       min-height: 100vh;
       padding: 20px;
       overflow-x: hidden;
-
-       
-            font-family: segoeui;
     }
 
     .container {
@@ -302,55 +104,92 @@
     .mock-btn,
     .location-btn,
     .emergency-btn {
-      padding: 15px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      padding: 1.3em 3em;
+      font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 3px;
+      border: none;
+      border-radius: 45px;
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease 0s;
+      cursor: pointer;
+      outline: none;
       position: relative;
       overflow: hidden;
     }
 
     .test-btn {
-      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-      color: white;
+      color: #000;
+      background-color: #ff6b9d;
+      box-shadow: 0px 8px 15px rgba(255, 107, 157, 0.2);
+    }
+
+    .test-btn:hover {
+      background-color: #e91e63;
+      box-shadow: 0px 15px 20px rgba(233, 30, 99, 0.4);
+      color: #fff;
+      transform: translateY(-7px);
+    }
+
+    .test-btn:active {
+      transform: translateY(-1px);
     }
 
     .mock-btn {
-      background: linear-gradient(45deg, #4ecdc4, #44a08d);
-      color: white;
+      color: #000;
+      background-color: #60a5fa;
+      box-shadow: 0px 8px 15px rgba(96, 165, 250, 0.2);
+    }
+
+    .mock-btn:hover {
+      background-color: #3b82f6;
+      box-shadow: 0px 15px 20px rgba(59, 130, 246, 0.4);
+      color: #fff;
+      transform: translateY(-7px);
+    }
+
+    .mock-btn:active {
+      transform: translateY(-1px);
     }
 
     .location-btn {
-      background: linear-gradient(45deg, #a8edea, #fed6e3);
-      color: #333;
+      color: #000;
+      background-color: #4ade80;
+      box-shadow: 0px 8px 15px rgba(74, 222, 128, 0.2);
+    }
+
+    .location-btn:hover {
+      background-color: #22c55e;
+      box-shadow: 0px 15px 20px rgba(34, 197, 94, 0.4);
+      color: #fff;
+      transform: translateY(-7px);
+    }
+
+    .location-btn:active {
+      transform: translateY(-1px);
     }
 
     .emergency-btn {
-      background: linear-gradient(45deg, #ff9800, #f57c00);
-      color: white;
+      color: #000;
+      background-color: #f87171;
+      box-shadow: 0px 8px 15px rgba(248, 113, 113, 0.2);
     }
 
-    .test-btn:hover,
-    .mock-btn:hover,
-    .location-btn:hover,
     .emergency-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      background-color: #ef4444;
+      box-shadow: 0px 15px 20px rgba(239, 68, 68, 0.4);
+      color: #fff;
+      transform: translateY(-7px);
     }
 
-    .test-btn:active,
-    .mock-btn:active,
-    .location-btn:active,
     .emergency-btn:active {
-      transform: translateY(0);
+      transform: translateY(-1px);
     }
 
     /* Map Styles */
-    #map {
+    #map, #myMap {
       height: 500px !important;
       width: 100% !important;
       min-height: 400px;
@@ -361,6 +200,12 @@
       position: relative;
       z-index: 1;
       background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    #map:hover, #myMap:hover {
+      box-shadow: 0 12px 30px rgba(31, 38, 135, 0.5);
+      transform: translateY(-2px);
     }
 
     .leaflet-container {
@@ -370,9 +215,21 @@
 
     .map-title {
       text-align: center;
-      margin: 20px 0 10px 0;
+      margin: 30px 0 15px 0;
       font-size: 1.5rem;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map-title::before, .map-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.5), transparent);
+      margin: 0 15px;
     }
 
     /* Wave Simulation Panel */
@@ -381,8 +238,14 @@
       backdrop-filter: blur(10px);
       border-radius: 15px;
       padding: 25px;
-      margin: 20px 0;
+      margin: 30px 0;
       border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .wave-simulation:hover {
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      transform: translateY(-2px);
     }
 
     .wave-simulation h3 {
@@ -471,7 +334,20 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 15px;
       padding: 20px;
-      margin-top: 20px;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .system-status:hover {
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      transform: translateY(-2px);
+    }
+
+    .system-status h3 {
+      color: #4ecdc4;
+      margin-bottom: 15px;
+      text-align: center;
     }
 
     .status-grid {
@@ -487,6 +363,12 @@
       border-radius: 10px;
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .status-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
     .status-card.online {
@@ -504,139 +386,156 @@
       margin-bottom: 10px;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px;
-        margin: 10px;
-      }
-
-      h1 {
-        font-size: 2rem;
-      }
-
-      .controls {
-        grid-template-columns: 1fr;
-      }
-
-      .alert-panel {
-        width: 90%;
-        right: 5%;
-        left: 5%;
-      }
-
-      .simulation-controls {
-        grid-template-columns: 1fr;
-      }
-
-      #map {
-        height: 400px !important;
-      }
-    }
-
-    /* Fallback Map Styles */
-    .map-fallback {
-      height: 500px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      flex-direction: column;
-      text-align: center;
-      padding: 50px;
-      border: 2px dashed rgba(255, 255, 255, 0.3);
-    }
-
-    .map-fallback h3 {
-      margin-bottom: 15px;
-      color: #4ecdc4;
-    }
-
-    .map-fallback button {
-      background: #4ecdc4;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 15px;
-      font-weight: bold;
+    /* Map Controls */
+    .map-controls-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       transition: all 0.3s ease;
     }
 
-    .map-fallback button:hover {
-      background: #45b7aa;
-      transform: translateY(-2px);
+    .map-controls-container:hover {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
+    .map-btn {
+      width: 45px;
+      height: 45px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #fff;
+      color: #333;
+      border: none;
+      border-radius: 50%;
+      margin-bottom: 8px;
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.3s ease 0s;
+      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      outline: none;
+    }
 
-     #myMap {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
+    /* Map Legend */
+    .map-legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      max-width: 220px;
+      transition: all 0.3s ease;
+    }
 
-        .info .phone {
-            background-image: url("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNS45NzQ2IDI2Ij48dGl0bGU+cG9pPC90aXRsZT48cGF0aCBkPSJNMjAuMzkxNCwxNS4zOTk0YTIuODE0MSwyLjgxNDEsMCwwLDEsMS4wNzIyLjIwOTUsMi43MjQzLDIuNzI0MywwLDAsMSwuOTA3My42MDNsMi43OTE2LDIuNzkzYTIuNzI1OCwyLjcyNTgsMCwwLDEsLjYwMjcuOTA3NywyLjg1MjksMi44NTI5LDAsMCwxLDAsMi4xNDU1LDIuNzI1OCwyLjcyNTgsMCwwLDEtLjYwMjcuOTA3N3EtLjcyMzMuNzM2My0xLjMyLDEuMzAxM2E3LjQwNDMsNy40MDQzLDAsMCwxLTEuMjMwOC45NTIxLDUuMDk1LDUuMDk1LDAsMCwxLTEuNDA4NS41ODRBNy42NjM4LDcuNjYzOCwwLDAsMSwxOS4zMzgyLDI2YTExLjQ3NywxMS40NzcsMCwwLDEtMy4yNjExLS40OTUxLDE4LjA4ODIsMTguMDg4MiwwLDAsMS0zLjMzMDktMS4zNzExLDIzLjg4LDIzLjg4LDAsMCwxLTMuMjQ4NC0yLjA4MkEyOC4xNTgsMjguMTU4LDAsMCwxLDYuNDksMTkuNDE3NSwyOC44OTc1LDI4Ljg5NzUsMCwwLDEsMy44ODI5LDE2LjM5NmEyMy42NzQ3LDIzLjY3NDcsMCwwLDEtMi4wNTU2LTMuMjVBMTguMjMyNywxOC4yMzI3LDAsMCwxLC40ODIyLDkuODM4OSwxMS4zODY0LDExLjM4NjQsMCwwLDEsMCw2LjY0LDcuNTk1Niw3LjU5NTYsMCwwLDEsLjE5NjcsNC43OCw1LjIxLDUuMjEsMCwwLDEsLjc4LDMuMzcwNmE3LjA3NSw3LjA3NSwwLDAsMSwuOTUxNy0xLjIzMTRxLjU2NDctLjU5LDEuMzAwNi0xLjMxNEEyLjgyNywyLjgyNywwLDAsMSwzLjkzMzYuMjE1OGEyLjc4NzIsMi43ODcyLDAsMCwxLDIuMTUwOCwwLDIuODA3OSwyLjgwNzksMCwwLDEsLjkwNzMuNjA5NGwyLjc5MTYsMi43OTNhMi43MjU4LDIuNzI1OCwwLDAsMSwuNjAyNy45MDc3LDIuODE3OSwyLjgxNzksMCwwLDEsLjIwOTQsMS4wNzI4LDIuNDc4LDIuNDc4LDAsMCwxLS4xOS45OTY2LDMuNjAxNiwzLjYwMTYsMCwwLDEtLjQ2OTUuNzkzNSw0LjY5NzksNC42OTc5LDAsMCwxLS42MTU0LjY0NzVxLS4zMzYzLjI5Mi0uNjE1NC41NzEzYTMuNzMyNCwzLjczMjQsMCwwLDAtLjQ2OTUuNTY0OSwxLjA4OTQsMS4wODk0LDAsMCwwLS4xOS42MTU3LDEuMTI1MiwxLjEyNTIsMCwwLDAsLjM0MjYuODI1Mmw2Ljk5MTcsNi45OTUxYTEuMTI0MSwxLjEyNDEsMCwwLDAsLjgyNDguMzQyOCwxLjA4ODEsMS4wODgxLDAsMCwwLC42MTU0LS4xOSwzLjczMTMsMy43MzEzLDAsMCwwLC41NjQ3LS40N3EuMjc5Mi0uMjc5My41NzEtLjYxNTdhNC42OTc1LDQuNjk3NSwwLDAsMSwuNjQ3MS0uNjE1NywzLjU5OTEsMy41OTkxLDAsMCwxLC43OTMxLS40NywyLjQ3NDcsMi40NzQ3LDAsMCwxLC45OTYxLS4xOU0xOS4zMzgyLDI0LjM3NWE1Ljc5NDIsNS43OTQyLDAsMCwwLDEuNTI5LS4xNzE0LDMuOTQ3OCwzLjk0NzgsMCwwLDAsMS4xMS0uNDk1MSw1LjczNDEsNS43MzQxLDAsMCwwLC45NjQ0LS44MDYycS40Njk1LS40ODI0LDEuMDc4Ni0xLjA5MThhMS4xMjUyLDEuMTI1MiwwLDAsMCwuMzQyNi0uODI1MiwxLjEwNDUsMS4xMDQ1LDAsMCwwLS4xODQtLjU0LDQuNzY0OSw0Ljc2NDksMCwwLDAtLjQ3NTgtLjY1MzhxLS4yOTE5LS4zNDI4LS42NTM1LS43MDQ2dC0uNzEwNi0uNjg1NXEtLjM0OS0uMzIzNy0uNjQ3MS0uNTk2N3QtLjQ2MzItLjQzOGExLjEzODksMS4xMzg5LDAsMCwwLS44Mzc1LS4zNDI4LDEuMDU4NywxLjA1ODcsMCwwLDAtLjYwOTEuMTksMy45MTY4LDMuOTE2OCwwLDAsMC0uNTU4My40N3EtLjI3OTIuMjc5My0uNTc3NC42MTU3YTUuMDAyNiw1LjAwMjYsMCwwLDEtLjY1MzUuNjE1NywzLjU5OTEsMy41OTkxLDAsMCwxLS43OTMxLjQ3LDIuNDc0NywyLjQ3NDcsMCwwLDEtLjk5NjEuMTksMi44MTQxLDIuODE0MSwwLDAsMS0xLjA3MjItLjIwOTUsMi43MjQzLDIuNzI0MywwLDAsMS0uOTA3My0uNjAzTDcuMjMyOCwxMS43Njg2YTIuNzI1OCwyLjcyNTgsMCwwLDEtLjYwMjctLjkwNzcsMi44MTc5LDIuODE3OSwwLDAsMS0uMjA5NC0xLjA3MjgsMi40NzgsMi40NzgsMCwwLDEsLjE5LS45OTY2LDMuNjAxNiwzLjYwMTYsMCwwLDEsLjQ2OTUtLjc5MzUsNS4wMDMsNS4wMDMsMCwwLDEsLjYxNTQtLjY1MzhxLjMzNjMtLjI5ODMuNjE1NC0uNTc3NmEzLjkxNzgsMy45MTc4LDAsMCwwLC40Njk1LS41NTg2LDEuMDYsMS4wNiwwLDAsMCwuMTktLjYwOTQsMS4xNCwxLjE0LDAsMCwwLS4zNDI2LS44Mzc5cS0uMTY1LS4xNjUtLjQzNzgtLjQ2MzRUNy41OTQ0LDMuNjVxLS4zMjM2LS4zNDkxLS42ODUyLS43MTA5VDYuMjA1LDIuMjg1MmE0Ljc2MjcsNC43NjI3LDAsMCwwLS42NTM1LS40NzYxLDEuMTAzMiwxLjEwMzIsMCwwLDAtLjUzOTMtLjE4NDEsMS4xMjQxLDEuMTI0MSwwLDAsMC0uODI0OC4zNDI4cS0uNjA5MS42MDk0LTEuMDg0OSwxLjA3OTFhNi40NjgzLDYuNDY4MywwLDAsMC0uODEyMS45NjQ4LDMuNzUsMy43NSwwLDAsMC0uNTA3NiwxLjExMDhBNS43NDQyLDUuNzQ0MiwwLDAsMCwxLjYxMTUsNi42NGE5Ljk4MzQsOS45ODM0LDAsMCwwLC40NjMyLDIuOTMyNiwxNi41LDE2LjUsMCwwLDAsMS4yODE2LDMuMDIxNSwyMy4wMTM3LDIzLjAxMzcsMCwwLDAsMS45MzUxLDIuOTc3MSwyNi41MjI5LDI2LjUyMjksMCwwLDAsMi40MzYzLDIuNzczOSwyNy4yODMyLDI3LjI4MzIsMCwwLDAsMi43ODUzLDIuNDEyMSwyMi45ODcsMjIuOTg3LDAsMCwwLDIuOTY5MywxLjkxMDYsMTYuMzY2MSwxNi4zNjYxLDAsMCwwLDIuOTk0NiwxLjI1NjhBOS44ODEsOS44ODEsMCwwLDAsMTkuMzM4MiwyNC4zNzVaIiBmaWxsPSIjNjY2NzY3Ii8+PC9zdmc+");
-        }
+    .map-legend:hover {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
 
-        .info .website {
-            background-image: url("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNyAyNyI+PHRpdGxlPnBvaTwvdGl0bGU+PHBhdGggZD0iTTEzLjUsMGExMy4yOTc4LDEzLjI5NzgsMCwwLDEsMy41ODU5LjQ4MTIsMTMuNjUyNCwxMy42NTI0LDAsMCwxLDMuMjMsMS4zNTc5LDEzLjQ3NDMsMTMuNDc0MywwLDAsMSw0Ljg0NSw0Ljg0NSwxMy42NTI0LDEzLjY1MjQsMCwwLDEsMS4zNTc5LDMuMjMsMTMuNjAxOSwxMy42MDE5LDAsMCwxLDAsNy4xNzE5LDEzLjY1MjQsMTMuNjUyNCwwLDAsMS0xLjM1NzksMy4yMywxMy40NzQzLDEzLjQ3NDMsMCwwLDEtNC44NDUsNC44NDUsMTMuNjUyNCwxMy42NTI0LDAsMCwxLTMuMjMsMS4zNTc5LDEzLjYwMTksMTMuNjAxOSwwLDAsMS03LjE3MTksMCwxMy42NTI0LDEzLjY1MjQsMCwwLDEtMy4yMy0xLjM1NzksMTMuNDc0MywxMy40NzQzLDAsMCwxLTQuODQ1LTQuODQ1QTEzLjY4MTIsMTMuNjgxMiwwLDAsMSwuNDgxMiwxNy4wOTI1YTEzLjYyNjUsMTMuNjI2NSwwLDAsMSwwLTcuMTc4NSwxMy42NTI0LDEzLjY1MjQsMCwwLDEsMS4zNTc5LTMuMjMsMTMuNDc0MywxMy40NzQzLDAsMCwxLDQuODQ1LTQuODQ1QTEzLjY4MTIsMTMuNjgxMiwwLDAsMSw5LjkwNzUuNDgxMiwxMy4yNzU1LDEzLjI3NTUsMCwwLDEsMTMuNSwwTTI0LjE2NTUsOC40Mzc1YTExLjI2NzgsMTEuMjY3OCwwLDAsMC0xLjIxMjktMi4wMSwxMi4wMDg0LDEyLjAwODQsMCwwLDAtMS41ODItMS43MiwxMi4yNCwxMi4yNCwwLDAsMC0xLjg4NTMtMS4zODQzLDExLjM1MjYsMTEuMzUyNiwwLDAsMC0yLjEyMjYtLjk4ODhBMTEuMjA5NCwxMS4yMDk0LDAsMCwxLDE4LjIyLDMuNzMxYTE0LjMzMTYsMTQuMzMxNiwwLDAsMSwuNjc5LDEuNTIyNywxNS44Nzc1LDE1Ljg3NzUsMCwwLDEsLjUwNzYsMS41ODg2cS4yMTA5LjgwNDIuMzY5MSwxLjU5NTJoNC4zOU0yNS4zMTI1LDEzLjVhMTEuNjUyNSwxMS42NTI1LDAsMCwwLS40ODc4LTMuMzc1SDIwLjAzOTFxLjEwNTUuODQzNy4xNTgyLDEuNjgwOVQyMC4yNSwxMy41cTAsLjg1NjktLjA1MjcsMS42OTQxdC0uMTU4MiwxLjY4MDloNC43ODU2YTExLjY1MjUsMTEuNjUyNSwwLDAsMCwuNDg3OC0zLjM3NU0xMy41LDI1LjMxMjVhMi4yMDg2LDIuMjA4NiwwLDAsMCwxLjIwNjMtLjM1Niw0LjM3Niw0LjM3NiwwLDAsMCwxLjAzNDktLjkzNiw3LjQwMjUsNy40MDI1LDAsMCwwLC44NS0xLjMxMTgsMTUuMzI3MiwxNS4zMjcyLDAsMCwwLC42NjU4LTEuNDgzMnEuMjktLjc1MTUuNDg3OC0xLjQ1dC4zMDMyLTEuMjEyOUg4Ljk1MTdxLjEwNTUuNTE0Mi4zMDMyLDEuMjEyOXQuNDg3OCwxLjQ1YTE1LjMyNzQsMTUuMzI3NCwwLDAsMCwuNjY1OCwxLjQ4MzIsNy40MDI1LDcuNDAyNSwwLDAsMCwuODUsMS4zMTE4LDQuMzc2MSw0LjM3NjEsMCwwLDAsMS4wMzQ5LjkzNiwyLjIwODYsMi4yMDg2LDAsMCwwLDEuMjA2My4zNTZtNC44Mzg0LTguNDM3NXEuMTA1NS0uODQzOC4xNjQ4LTEuNjgwOVQxOC41NjI1LDEzLjVxMC0uODU2OS0uMDU5My0xLjY5NDF0LS4xNjQ4LTEuNjgwOUg4LjY2MTZxLS4xMDU1Ljg0MzctLjE2NDgsMS42ODA5VDguNDM3NSwxMy41cTAsLjg1NjkuMDU5MywxLjY5NDF0LjE2NDgsMS42ODA5aDkuNjc2OE0xLjY4NzUsMTMuNWExMS42NTI1LDExLjY1MjUsMCwwLDAsLjQ4NzgsMy4zNzVINi45NjA5cS0uMTA1NS0uODQzOC0uMTU4Mi0xLjY4MDlUNi43NSwxMy41cTAtLjg1NjkuMDUyNy0xLjY5NDF0LjE1ODItMS42ODA5SDIuMTc1M0ExMS42NTI1LDExLjY1MjUsMCwwLDAsMS42ODc1LDEzLjVNMTMuNSwxLjY4NzVhMi4yMDg2LDIuMjA4NiwwLDAsMC0xLjIwNjMuMzU2LDQuMzc2LDQuMzc2LDAsMCwwLTEuMDM0OS45MzYsNy40MDI1LDcuNDAyNSwwLDAsMC0uODUsMS4zMTE4LDE1LjMyNzQsMTUuMzI3NCwwLDAsMC0uNjY1OCwxLjQ4MzJxLS4yOS43NTE1LS40ODc4LDEuNDVUOC45NTE3LDguNDM3NWg5LjA5NjdxLS4xMDU1LS41MTQyLS4zMDMyLTEuMjEyOXQtLjQ4NzgtMS40NWExNS4zMjcyLDE1LjMyNzIsMCwwLDAtLjY2NTgtMS40ODMyLDcuNDAyNSw3LjQwMjUsMCwwLDAtLjg1LTEuMzExOCw0LjM3Niw0LjM3NiwwLDAsMC0xLjAzNDktLjkzNkEyLjIwODYsMi4yMDg2LDAsMCwwLDEzLjUsMS42ODc1bS0zLjg2MjguNjQ2YTExLjM1MjYsMTEuMzUyNiwwLDAsMC0yLjEyMjYuOTg4OEExMi4yNCwxMi4yNCwwLDAsMCw1LjYyOTQsNC43MDY1YTEyLjAwODQsMTIuMDA4NCwwLDAsMC0xLjU4MiwxLjcyLDExLjI2NzgsMTEuMjY3OCwwLDAsMC0xLjIxMjksMi4wMWg0LjM5cS4xNTgyLS43OTEuMzY5MS0xLjU5NTJhMTUuODc3OCwxNS44Nzc4LDAsMCwxLC41MDc2LTEuNTg4NkExNC4zMzE3LDE0LjMzMTcsMCwwLDEsOC43OCwzLjczMWExMS4yMDkzLDExLjIwOTMsMCwwLDEsLjg1NjktMS4zOTc1TTIuODM0NSwxOC41NjI1YTExLjI2NzgsMTEuMjY3OCwwLDAsMCwxLjIxMjksMi4wMSwxMi4wMDgzLDEyLjAwODMsMCwwLDAsMS41ODIsMS43MiwxMi4yNCwxMi4yNCwwLDAsMCwxLjg4NTMsMS4zODQzLDExLjM1MjUsMTEuMzUyNSwwLDAsMCwyLjEyMjYuOTg4OEExMS4yMDkzLDExLjIwOTMsMCwwLDEsOC43OCwyMy4yNjlhMTQuMzMxNywxNC4zMzE3LDAsMCwxLS42NzktMS41MjI3LDE1Ljg3NzgsMTUuODc3OCwwLDAsMS0uNTA3Ni0xLjU4ODZxLS4yMTA5LS44MDQyLS4zNjkxLTEuNTk1MmgtNC4zOW0xNC41MjgzLDYuMTA0YTExLjM1MjYsMTEuMzUyNiwwLDAsMCwyLjEyMjYtLjk4ODgsMTIuMjQsMTIuMjQsMCwwLDAsMS44ODUzLTEuMzg0MywxMi4wMDgzLDEyLjAwODMsMCwwLDAsMS41ODItMS43MiwxMS4yNjc5LDExLjI2NzksMCwwLDAsMS4yMTI5LTIuMDFoLTQuMzlxLS4xNTgyLjc5MS0uMzY5MSwxLjU5NTJhMTUuODc3NSwxNS44Nzc1LDAsMCwxLS41MDc2LDEuNTg4NiwxNC4zMzE1LDE0LjMzMTUsMCwwLDEtLjY3OSwxLjUyMjdBMTEuMjA5NCwxMS4yMDk0LDAsMCwxLDE3LjM2MjgsMjQuNjY2NVoiIGZpbGw9IiM2NjY3NjciLz48L3N2Zz4=");
-        }
+    .map-legend h4 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
 
-        .info .location {
-            background-image: url("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNyAzNiI+PHRpdGxlPnBvaTwvdGl0bGU+PHBhdGggZD0iTTEzLjUsMGExMy4zNywxMy4zNywwLDAsMSwzLjU4NTkuNDc5MiwxMy43ODY2LDEzLjc4NjYsMCwwLDEsMy4yMjczLDEuMzQzOCwxMy4zMzg2LDEzLjMzODYsMCwwLDEsNi4yMDE2LDcuOTY4N0ExMi45MDA5LDEyLjkwMDksMCwwLDEsMjcsMTMuMzMzM2ExMC41NjY0LDEwLjU2NjQsMCwwLDEtLjM0OCwyLjc0LDEzLjQwNTEsMTMuNDA1MSwwLDAsMS0xLjAwMiwyLjU5MzhMMTMuNSwzNiwxLjM1LDE4LjY2NjdBMTMuNDA1LDEzLjQwNSwwLDAsMSwuMzQ4LDE2LjA3MjksMTAuNTY2NCwxMC41NjY0LDAsMCwxLDAsMTMuMzMzMywxMi45MDA5LDEyLjkwMDksMCwwLDEsLjQ4NTIsOS43OTE3LDEzLjQzNDYsMTMuNDM0NiwwLDAsMSwxLjg0NTcsNi42MDQyYTEzLjQ1MywxMy40NTMsMCwwLDEsNC44NDEtNC43ODEyQTEzLjc4NjUsMTMuNzg2NSwwLDAsMSw5LjkxNDEuNDc5MiwxMy4zNywxMy4zNywwLDAsMSwxMy41LDBNMjMuNTQwNiwxNy42MjVxMC0uMDIwOC4wMTA1LS4wMjA4dC4wMTA1LS4wMjA4YTguOTgsOC45OCwwLDAsMCwuODAxNi0yLjA2MjUsOC44ODE2LDguODgxNiwwLDAsMCwuMjc0Mi0yLjE4NzUsMTAuNTMzNywxMC41MzM3LDAsMCwwLS44NzU0LTQuMjcwOCwxMS4xNTYxLDExLjE1NjEsMCwwLDAtMi4zOTQxLTMuNSwxMS4zMSwxMS4zMSwwLDAsMC0zLjU0MzctMi4zNjQ2QTEwLjg5NjEsMTAuODk2MSwwLDAsMCwxMy41LDIuMzMzM2ExMC44OTYxLDEwLjg5NjEsMCwwLDAtNC4zMjQyLjg2NDZBMTEuMzEsMTEuMzEsMCwwLDAsNS42MzIsNS41NjI1YTExLjE1NjEsMTEuMTU2MSwwLDAsMC0yLjM5NDEsMy41LDEwLjUzMzcsMTAuNTMzNywwLDAsMC0uODc1NCw0LjI3MDgsOC44ODE1LDguODgxNSwwLDAsMCwuMjc0MiwyLjE4NzUsOC45OCw4Ljk4LDAsMCwwLC44MDE2LDIuMDYyNXEwLC4wMjA4LjAxMDUuMDIwOHQuMDEwNS4wMjA4TDEzLjUsMzAuNzkxNywyMy41NDA2LDE3LjYyNU0xMy41LDUuNWE3LjgxMjIsNy44MTIyLDAsMCwxLDMuMDkuNjE0Niw4LjAwOTMsOC4wMDkzLDAsMCwxLDIuNTIwNywxLjY3NzEsNy45LDcuOSwwLDAsMSwxLjY5OCwyLjQ5LDcuNzk2LDcuNzk2LDAsMCwxLDAsNi4xMDQyLDcuOSw3LjksMCwwLDEtMS42OTgsMi40OUE4LjAwOTMsOC4wMDkzLDAsMCwxLDE2LjU5LDIwLjU1MjFhOC4wNzY0LDguMDc2NCwwLDAsMS02LjE4LDBBOC4wMDkyLDguMDA5MiwwLDAsMSw3Ljg4OTEsMTguODc1YTcuOSw3LjksMCwwLDEtMS42OTgtMi40OSw3Ljc5Niw3Ljc5NiwwLDAsMSwwLTYuMTA0Miw3LjksNy45LDAsMCwxLDEuNjk4LTIuNDlBOC4wMDkyLDguMDA5MiwwLDAsMSwxMC40MSw2LjExNDYsNy44MTIzLDcuODEyMywwLDAsMSwxMy41LDUuNW0wLDEzLjMzMzNhNS41NDA3LDUuNTQwNywwLDAsMCw1LjEzNjMtMy4zNTQyLDUuNTQsNS41NCwwLDAsMCwwLTQuMjkxNyw1LjUwNTQsNS41MDU0LDAsMCwwLTEuMTkxOC0xLjc1LDUuNjI4OSw1LjYyODksMCwwLDAtNy44ODkxLDAsNS41MDU0LDUuNTA1NCwwLDAsMC0xLjE5MTgsMS43NSw1LjU0LDUuNTQsMCwwLDAsMCw0LjI5MTcsNS41MDU0LDUuNTA1NCwwLDAsMCwxLjE5MTgsMS43NUE1LjU2OTQsNS41Njk0LDAsMCwwLDEzLjUsMTguODMzM1oiIGZpbGw9IiM2NzY4NjciLz48L3N2Zz4=");
-        }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .color-box {
+      width: 20px;
+      height: 15px;
+      border-radius: 3px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .legend-text {
+      font-size: 12px;
+      color: white;
+      text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    }
+    
+    /* Custom Azure Map Style Control - Clean horizontal layout */
+    .atlas-map-style-picker {
+      background: rgba(255, 255, 255, 0.15) !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+      padding: 8px !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    .atlas-map-style-picker:hover {
+      background: rgba(255, 255, 255, 0.25) !important;
+    }
+    
+    .atlas-map-style-picker-list {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: wrap !important;
+      gap: 6px !important;
+    }
+    
+    .atlas-map-style-picker-button {
+      border-radius: 6px !important;
+      margin: 0 !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      overflow: hidden !important;
+      transition: all 0.2s ease !important;
+      width: 60px !important;
+      height: 60px !important;
+    }
+    
+    .atlas-map-style-picker-button:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .atlas-map-style-picker-button-selected {
+      box-shadow: 0 0 0 2px #4ecdc4 !important;
+      background-color: rgba(78, 205, 196, 0.2) !important;
+    }
+    
+    .atlas-map-style-picker-button img {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 4px !important;
+    }
+
+    /* Make the style control responsive */
+    @media (max-width: 768px) {
+      .atlas-map-style-picker {
+        max-width: calc(100% - 40px) !important;
+      }
+      
+      .atlas-map-style-picker-button {
+        width: 50px !important;
+        height: 50px !important;
+      }
+    }
   </style>
 </head>
 
-<body onload="getMap()">
-    <div id="myMap"></div>
-      <div id="mapControls" style="position: absolute; top: 20px; right: 20px; z-index: 1000; background-color: white; padding: 10px; border-radius: 5px;">
-        <button id="zoomIn" style="width: 30px; height: 30px; margin-bottom: 3px; font-size: 18px; cursor: pointer;">+</button>
-        <button id="zoomOut" style="width: 30px; height: 30px; font-size: 18px; cursor: pointer;">-</button>
-    </div>    <!-- Intensity Legend -->
-    <div id="intensityLegend" style="position: absolute; bottom: 20px; left: 20px; z-index: 1000; background-color: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-        <h4 style="margin: 0 0 10px 0; font-size: 14px;">Earthquake Intensity (Last 7 Days)</h4>
-        <div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 20px; height: 15px; background: rgb(0,100,255); border-radius: 2px;"></div>
-                <span>Low (0-5)</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 20px; height: 15px; background: rgb(0,255,255); border-radius: 2px;"></div>
-                <span>Mild (5-10)</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 20px; height: 15px; background: rgb(0,255,0); border-radius: 2px;"></div>
-                <span>Medium (10-15)</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 20px; height: 15px; background: rgb(255,255,0); border-radius: 2px;"></div>
-                <span>High (15-18)</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 20px; height: 15px; background: rgb(255,165,0); border-radius: 2px;"></div>
-                <span>Very High (18-20)</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 20px; height: 15px; background: rgb(255,0,0); border-radius: 2px;"></div>
-                <span>Extreme (20+)</span>
-            </div>
-        </div>
-    </div><script>
-        document.getElementById('zoomIn').addEventListener('click', function() {
-            map.setCamera({
-                zoom: map.getCamera().zoom + 0.7
-            });
-        });
-          document.getElementById('zoomOut').addEventListener('click', function() {
-            map.setCamera({
-                zoom: map.getCamera().zoom - 0.7
-            });
-        });
-    </script>
+<body>
   <div class="container">
     <h1>🚨 ShakeAlert - Real-Time Earthquake Detection</h1>
 
@@ -645,7 +544,6 @@
     </div>
 
     <div class="controls">
-
       <button onclick="testLocation()" class="location-btn">
         📍 Test Location
       </button>
@@ -658,15 +556,50 @@
       <button onclick="emergencyMode()" class="emergency-btn">
         🆘 Emergency Mode
       </button>
-      <!-- Add this button in your controls section -->
       <button onclick="testLocationDetailed()" class="location-btn">
         🔍 Test Real GPS Location
       </button>
-
     </div>
 
     <div class="map-title">🌍 Real-Time Earthquake Monitoring Map</div>
     <div id="map"></div>
+
+    <!-- Azure Maps Heatmap Section -->
+    <div class="map-title">🔥 Earthquake Intensity Heatmap (Last 7 Days)</div>
+    <div style="position: relative;">
+      <div id="myMap"></div>
+      <div class="map-controls-container">
+        <button id="zoomIn" class="map-btn">+</button>
+        <button id="zoomOut" class="map-btn">-</button>
+      </div>
+      <div class="map-legend">
+        <h4>Earthquake Intensity Levels</h4>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(0,100,255);"></div>
+          <span class="legend-text">Low (0-5)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(0,255,255);"></div>
+          <span class="legend-text">Mild (5-10)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(0,255,0);"></div>
+          <span class="legend-text">Medium (10-15)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(255,255,0);"></div>
+          <span class="legend-text">High (15-18)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(255,165,0);"></div>
+          <span class="legend-text">Very High (18-20)</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box" style="background: rgb(255,0,0);"></div>
+          <span class="legend-text">Extreme (20+)</span>
+        </div>
+      </div>
+    </div>
 
     <div class="wave-simulation">
       <h3>🌊 Seismic Wave Propagation Simulation</h3>
@@ -705,6 +638,231 @@
 
   <!-- Firebase JavaScript -->
   <script type="module" src="detector.js"></script>
+
+  <!-- Azure Maps JavaScript -->
+  <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.js"></script>
+  <script src="https://atlas.microsoft.com/sdk/javascript/service/2/atlas-service.min.js"></script>
+
+  <!-- Firebase SDK for Azure Maps -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <!-- Azure Maps Initialization -->
+  <script>
+    // Initialize the Azure Map after DOM loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Variables for the map
+      var azureMap, datasource;
+      
+      // Firebase configuration for Azure Map
+      const firebaseConfig = {
+        apiKey: "AIzaSyBwVMxhmCbm-jo6ExYj2m9hXLhexuDKk0U",
+        authDomain: "shakealert-908d0.firebaseapp.com",
+        databaseURL: "https://shakealert-908d0-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "shakealert-908d0",
+        storageBucket: "shakealert-908d0.appspot.com",
+        messagingSenderId: "202678351500",
+        appId: "1:202678351500:web:f442a6f1354dba4b746da9",
+        measurementId: "G-L3M6X4QG2E"
+      };
+      
+      // We'll use a separate Firebase instance for the Azure Map to avoid conflicts
+      const azureFirebase = firebase.initializeApp(firebaseConfig, "azure-map-instance");
+      const database = azureFirebase.database();
+
+      // Function to load earthquake data from Firebase
+      function loadEarthquakeData() {
+        const shakesRef = database.ref('shakes');
+        shakesRef.on('value', (snapshot) => {
+          const data = snapshot.val();
+          if (datasource) datasource.clear();
+          if (data) {
+            const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+            const features = [];
+            
+            // Show loading indicator in status
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = '<div class="loading"></div> Loading earthquake data...';
+            
+            Object.keys(data).forEach(key => {
+              const shake = data[key];
+              const time = shake.timestamp || 0;
+              if (time >= oneWeekAgo) {
+                const coordinates = shake.coordinates;
+                if (coordinates && coordinates.lng && coordinates.lat) {
+                  features.push({
+                    type: 'Feature',
+                    geometry: { type: 'Point', coordinates: [coordinates.lng, coordinates.lat] },
+                    properties: {
+                      mag: shake.intensity || shake.z || 1,
+                      place: shake.location || 'Unknown location',
+                      time: shake.timestamp || Date.now(),
+                      intensity: shake.intensity,
+                      geohash: shake.geohash,
+                      x: shake.x, y: shake.y, z: shake.z,
+                      id: key
+                    }
+                  });
+                }
+              }
+            });
+            
+            if (features.length > 0 && datasource) {
+              datasource.add(features);
+              
+              // Update status with success message
+              statusEl.innerHTML = `✅ Loaded ${features.length} earthquakes from the last 7 days`;
+              statusEl.className = 'status status-success';
+              
+              // Auto-hide success message after 5 seconds
+              setTimeout(() => {
+                statusEl.innerHTML = '🔄 ShakeAlert system active and monitoring';
+                statusEl.className = 'status';
+              }, 5000);
+            } else {
+              // Update status for no data
+              statusEl.innerHTML = 'ℹ️ No recent earthquake data available';
+              statusEl.className = 'status status-warning';
+            }
+          }
+        });
+      }
+
+      // Initialize Azure Map
+      function initAzureMap() {
+        azureMap = new atlas.Map('myMap', {
+          center: [80.0, 22.0],
+          zoom: 3.9,
+          view: 'Auto',
+          style: 'night', // Starting with night style for better visualization
+          authOptions: {
+            authType: 'subscriptionKey',
+            subscriptionKey: '9SVOQbxG2irBpV24jwuAmtDSxH6cD9XIeuaX6toUVkgjx8cZTnjKJQQJ99BFACYeBjFVq1wQAAAgAZMP31E0'
+          }
+        });
+        
+        azureMap.events.add('ready', function() {
+          // Add clean style control like the example
+          azureMap.controls.add(new atlas.control.StyleControl({
+            mapStyles: 'all'
+          }), {
+            position: 'top-left'
+          });
+          
+          // Apply enhanced styling after control is added
+          setTimeout(() => {
+            const stylePicker = document.querySelector('.atlas-map-style-picker');
+            if (stylePicker) {
+              // Style the button list for horizontal layout
+              const listContainer = stylePicker.querySelector('.atlas-map-style-picker-list');
+              if (listContainer) {
+                listContainer.style.display = 'flex';
+                listContainer.style.flexDirection = 'row';
+                listContainer.style.flexWrap = 'wrap';
+                listContainer.style.gap = '6px';
+              }
+              
+              // Add hover effects to buttons
+              const buttons = stylePicker.querySelectorAll('.atlas-map-style-picker-button');
+              buttons.forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                  if (!button.classList.contains('atlas-map-style-picker-button-selected')) {
+                    button.style.transform = 'translateY(-2px)';
+                    button.style.boxShadow = '0 3px 10px rgba(0,0,0,0.2)';
+                  }
+                });
+                
+                button.addEventListener('mouseleave', () => {
+                  if (!button.classList.contains('atlas-map-style-picker-button-selected')) {
+                    button.style.transform = 'none';
+                    button.style.boxShadow = 'none';
+                  }
+                });
+              });
+            }
+          }, 300);
+          
+          // Create data source and add to map
+          datasource = new atlas.source.DataSource();
+          azureMap.sources.add(datasource);
+          
+          // Create heat map layer with enhanced visualization
+          azureMap.layers.add(new atlas.layer.HeatMapLayer(datasource, null, {
+            weight: [
+              'interpolate', ['linear'], ['get', 'mag'],
+              0, 0, 
+              5, 0.2, 
+              10, 0.5, 
+              15, 0.8, 
+              20, 1
+            ],
+            radius: [
+              'interpolate', ['linear'], ['zoom'],
+              0, 5, 
+              5, 25, 
+              10, 50, 
+              15, 150,
+              22, 300
+            ],
+            color: [
+              'interpolate', ['linear'], ['heatmap-density'],
+              0, 'rgba(0,0,255,0)',
+              0.1, 'rgb(0,100,255)',
+              0.3, 'rgb(0,255,255)',
+              0.5, 'rgb(0,255,0)',
+              0.7, 'rgb(255,255,0)',
+              0.85, 'rgb(255,165,0)',
+              1, 'rgb(255,0,0)'
+            ],
+            opacity: 0.8
+          }), 'labels');
+          
+          // Add a popup for when users click on the map
+          const popup = new atlas.Popup({
+            pixelOffset: [0, -30],
+            closeButton: true
+          });
+          
+          // Add a click event to the map
+          azureMap.events.add('click', function(e) {
+            const features = azureMap.layers.getRenderedShapes(e.position, 'HeatMapLayer');
+            if (features.length > 0) {
+              popup.setOptions({
+                content: `<div style="padding:10px;"><strong>Location:</strong> ${e.position[1].toFixed(4)}, ${e.position[0].toFixed(4)}<br>
+                          <strong>Intensity Level:</strong> High activity area<br>
+                          <strong>Last Updated:</strong> ${new Date().toLocaleString()}</div>`,
+                position: e.position
+              });
+              popup.open(azureMap);
+            }
+          });
+          
+          // Load earthquake data
+          loadEarthquakeData();
+        });
+
+        // Setup interactive zoom controls
+        document.getElementById('zoomIn').addEventListener('click', function() {
+          azureMap.setCamera({
+            zoom: azureMap.getCamera().zoom + 0.7,
+            type: 'ease',
+            duration: 300
+          });
+        });
+        
+        document.getElementById('zoomOut').addEventListener('click', function() {
+          azureMap.setCamera({
+            zoom: azureMap.getCamera().zoom - 0.7,
+            type: 'ease',
+            duration: 300
+          });
+        });
+      }
+      
+      // Initialize the map
+      initAzureMap();
+    });
+  </script>
 </body>
 
 </html>
